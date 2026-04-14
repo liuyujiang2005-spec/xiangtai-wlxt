@@ -5,6 +5,8 @@
   "scripts": {
     "postinstall": "prisma generate",
     "prebuild": "prisma generate",
+    "postbuild": "prisma migrate deploy && npm run seed:users",
+    "prestart": "prisma migrate deploy && npm run seed:users",
     "dev": "prisma generate && next dev --webpack",
     "dev:3001": "next dev --webpack -p 3001",
     "dev:turbo": "next dev --turbopack",
