@@ -10,10 +10,7 @@ const globalForPrisma = globalThis as unknown as {
  * 创建 Prisma SQLite 适配器，统一读取环境变量中的数据库地址。
  */
 function createSqliteAdapter(): PrismaBetterSqlite3 {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error("缺少 DATABASE_URL，无法连接 SQLite 数据库");
-  }
+  const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
   return new PrismaBetterSqlite3({ url: resolveSqliteFileUrl(databaseUrl) });
 }
 

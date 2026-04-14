@@ -42,10 +42,19 @@ export function LoginForm() {
           password,
         }),
       });
-      const data = (await response.json()) as {
-        message?: string;
-        redirectTo?: string;
-      };
+      let data: { message?: string; redirectTo?: string } = {};
+      try {
+        data = (await response.json()) as {
+          message?: string;
+          redirectTo?: string;
+        };
+      } catch {
+        data = {
+          message: response.ok
+            ? "响应解析失败"
+            : `服务异常（HTTP ${response.status}）`,
+        };
+      }
       if (!response.ok) {
         setError(data.message ?? "登录失败");
         return;
@@ -54,8 +63,10 @@ export function LoginForm() {
         router.push(data.redirectTo);
         router.refresh();
       }
-    } catch {
-      setError("网络异常，请稍后重试");
+    } catch (e) {
+      setError(
+        e instanceof Error ? `网络异常：${e.message}` : "网络异常，请稍后重试"
+      );
     } finally {
       setSubmitting(false);
     }

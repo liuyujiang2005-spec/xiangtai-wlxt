@@ -4,10 +4,7 @@ import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient, UserRole } from "../app/generated/prisma/client";
 import { resolveSqliteFileUrl } from "../lib/resolve-sqlite-url";
 
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error("缺少 DATABASE_URL，无法初始化账号");
-}
+const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
 
 const prisma = new PrismaClient({
   adapter: new PrismaBetterSqlite3({ url: resolveSqliteFileUrl(databaseUrl) }),
