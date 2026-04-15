@@ -8,7 +8,7 @@
     "dev": "prisma generate && next dev --webpack",
     "dev:3001": "next dev --webpack -p 3001",
     "dev:turbo": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "prisma migrate deploy && next start",
     "lint": "eslint",
     "seed:users": "tsx scripts/seed-users.ts",
