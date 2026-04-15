@@ -9,13 +9,16 @@
     "dev:3001": "next dev --webpack -p 3001",
     "dev:turbo": "next dev --turbopack",
     "build": "prisma generate && next build",
-    "start": "prisma migrate deploy && next start",
+    "start": "prisma migrate deploy && prisma db seed && next start",
     "lint": "eslint",
     "seed:users": "tsx scripts/seed-users.ts",
     "db:list-users": "tsx scripts/list-users.ts",
     "db:unban-all": "tsx scripts/unban-all.ts",
     "password:reset": "tsx scripts/reset-password.ts",
     "db:cleanup-tracking": "tsx scripts/cleanup-tracking-numbers.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.7.0",

@@ -11,6 +11,9 @@ const globalForPrisma = globalThis as unknown as {
  */
 function createSqliteAdapter(): PrismaBetterSqlite3 {
   const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
+  if (!process.env.DATABASE_URL) {
+    console.error("[prisma] DATABASE_URL 未配置，回退到 file:./dev.db");
+  }
   return new PrismaBetterSqlite3({ url: resolveSqliteFileUrl(databaseUrl) });
 }
 
