@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    const passwordHash = await hash("password123", 10);
+    const passwordHash = await hash("admin123", 10);
     await prisma.user.upsert({
       where: { username: "admin" },
       update: {
