@@ -2,6 +2,7 @@ import { compare } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthSecret } from "@/lib/auth/config";
+import { ensureAuthStorageReady } from "@/lib/auth/ensure-auth-storage";
 import { getHomePathForRole } from "@/lib/auth/roles";
 import {
   getSessionCookieName,
@@ -20,13 +21,23 @@ const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 7;
  */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const body = (await request.json()) as LoginBody;
+    let body: LoginBody;
+    try {
+      body = (await request.json()) as LoginBody;
+    } catch {
+      return NextResponse.json(
+        { message: "请求格式错误，请检查账号和密码输入" },
+        { status: 400 }
+      );
+    }
     const username = (body.username ?? "").trim();
     const password = body.password ?? "";
 
     if (!username || !password) {
       return NextResponse.json({ message: "请输入账号和密码" }, { status: 400 });
     }
+
+    await ensureAuthStorageReady(prisma);
 
     const user = await prisma.user.findUnique({
       where: { username },

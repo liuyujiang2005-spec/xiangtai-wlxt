@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { accessSync, constants, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 /**
@@ -37,6 +37,27 @@ export function findPrismaProjectRoot(): string {
  * 将 DATABASE_URL 中的 SQLite 路径解析为基于项目根目录的绝对路径，
  * 避免 Next 与 CLI 工作目录不一致时连错库。
  */
+function ensureSqliteParentDirectory(absolutePath: string): boolean {
+  try {
+    mkdirSync(path.dirname(absolutePath), { recursive: true });
+    accessSync(path.dirname(absolutePath), constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 当目标目录不可写时，回退到项目根目录下的 dev.db，避免生产环境直接启动失败。
+ */
+function getSqliteFallbackUrl(): string {
+  return `file:${path.join(findPrismaProjectRoot(), "dev.db")}`;
+}
+
+/**
+ * 将 DATABASE_URL 中的 SQLite 路径解析为基于项目根目录的绝对路径，
+ * 并尽量确保目标目录可写。
+ */
 export function resolveSqliteFileUrl(databaseUrl: string): string {
   if (!databaseUrl.startsWith("file:")) {
     return databaseUrl;
@@ -51,9 +72,21 @@ export function resolveSqliteFileUrl(databaseUrl: string): string {
   }
   const candidate = rest.replace(/^\.\//, "");
   if (path.isAbsolute(candidate)) {
-    return `file:${candidate}`;
+    if (ensureSqliteParentDirectory(candidate)) {
+      return `file:${candidate}`;
+    }
+    console.warn(
+      `[prisma] SQLite 目录不可写，已回退到项目内数据库：${candidate}`
+    );
+    return getSqliteFallbackUrl();
   }
   const root = findPrismaProjectRoot();
   const absolute = path.join(root, candidate);
+  if (!ensureSqliteParentDirectory(absolute)) {
+    console.warn(
+      `[prisma] SQLite 目录不可写，已回退到项目内数据库：${absolute}`
+    );
+    return getSqliteFallbackUrl();
+  }
   return `file:${absolute}`;
 }

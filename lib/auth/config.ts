@@ -1,8 +1,14 @@
 /**
- * 读取会话签名密钥，生产环境务必配置 AUTH_SECRET。
+ * 读取会话签名密钥，兼容 AUTH_SECRET 与 NEXTAUTH_SECRET。
  */
 export function getAuthSecret(): string {
-  return (
-    process.env.AUTH_SECRET ?? "development-auth-secret-change-in-production"
-  );
+  const authSecret = process.env.AUTH_SECRET?.trim();
+  if (authSecret) {
+    return authSecret;
+  }
+  const nextAuthSecret = process.env.NEXTAUTH_SECRET?.trim();
+  if (nextAuthSecret) {
+    return nextAuthSecret;
+  }
+  return "development-auth-secret-change-in-production";
 }
