@@ -4,7 +4,8 @@
 /node_modules
 /.pnp
 .pnp.*
-.yarn/*
+.yarn/
+*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -40,5 +41,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/app/generated/prisma
-dev.db
+/app/generated
