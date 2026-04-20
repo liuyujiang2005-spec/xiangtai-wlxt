@@ -1,33 +1,25 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogIn } from "lucide-react";
 
+interface LoginFormProps {
+  forbiddenHint?: boolean;
+  bannedHint?: boolean;
+}
+
 /**
- * 登录表单主体，读取 URL 查询参数展示无权提示。
+ * 登录表单：错误提示由服务端通过 props 传入，
+ * 避免在 Suspense 内使用 useSearchParams 导致的 React 19 水合问题。
  */
-export function LoginForm() {
+export function LoginForm({ forbiddenHint, bannedHint }: LoginFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const errorParam = searchParams.get("error");
-  const forbiddenHint =
-    errorParam === "forbidden"
-      ? "无权访问该页面，请使用对应角色账号登录。"
-      : "";
-  const bannedHint =
-    errorParam === "banned"
-      ? "该账号已被封禁，无法继续使用。如有疑问请联系管理员。"
-      : "";
-
-  /**
-   * 提交登录请求并处理跳转。
-   */
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -37,39 +29,17 @@ export function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          username: username.trim(),
-          password,
-        }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
       let data: { message?: string; redirectTo?: string } = {};
-      try {
-        data = (await response.json()) as {
-          message?: string;
-          redirectTo?: string;
-        };
-      } catch {
-        data = {
-          message: response.ok
-            ? "响应解析失败"
-            : `服务异常（HTTP ${response.status}）`,
-        };
+      try { data = await response.json(); } catch {
+        data = { message: response.ok ? "服务器异常" : `请求异常：HTTP ${response.status}` };
       }
-      if (!response.ok) {
-        setError(data.message ?? "登录失败");
-        return;
-      }
-      if (data.redirectTo) {
-        router.push(data.redirectTo);
-        router.refresh();
-      }
+      if (!response.ok) { setError(data.message ?? "登录失败"); return; }
+      if (data.redirectTo) { router.push(data.redirectTo); router.refresh(); }
     } catch (e) {
-      setError(
-        e instanceof Error ? `网络异常：${e.message}` : "网络异常，请稍后重试"
-      );
-    } finally {
-      setSubmitting(false);
-    }
+      setError(e instanceof Error ? `网络异常：${e.message}` : "网络异常，请稍后再试");
+    } finally { setSubmitting(false); }
   }
 
   return (
@@ -87,53 +57,34 @@ export function LoginForm() {
 
         {forbiddenHint ? (
           <p className="mb-4 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            {forbiddenHint}
+            权限不足页面，请使用对应角色账号登录。
           </p>
         ) : null}
         {bannedHint ? (
           <p className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800">
-            {bannedHint}
+            该账号已被禁用无法登录。如需恢复，请联系管理员。
           </p>
         ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block text-sm">
             <span className="mb-1 block text-slate-600">账号</span>
-            <input
-              type="text"
-              autoComplete="username"
+            <input type="text" autoComplete="username"
               className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none ring-brand/20 focus:ring"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="用户名"
-            />
+              value={username} onChange={(e) => setUsername(e.target.value)} placeholder="用户名" />
           </label>
           <label className="block text-sm">
             <span className="mb-1 block text-slate-600">密码</span>
-            <input
-              type="password"
-              autoComplete="current-password"
+            <input type="password" autoComplete="current-password"
               className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none ring-brand/20 focus:ring"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="密码"
-            />
+              value={password} onChange={(e) => setPassword(e.target.value)} placeholder="密码" />
           </label>
-          {error ? (
-            <p className="text-sm text-red-600">{error}</p>
-          ) : null}
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
           <p className="text-xs leading-relaxed text-slate-500">
-            登录名<strong>区分大小写</strong>（如 Allen 与 allen 为不同账号）。若确认密码无误仍失败，请在本机项目目录执行{" "}
-            <code className="rounded bg-slate-100 px-1">npm run seed:users</code>{" "}
-            恢复种子账号密码，或使用{" "}
-            <code className="rounded bg-slate-100 px-1">npm run password:reset</code>{" "}
-            重置。
+            登录请<strong>注意大小写</strong>，Allen 和 allen 为不同账号！
           </p>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-xl bg-brand py-2.5 text-sm font-medium text-white disabled:bg-slate-300"
-          >
+          <button type="submit" disabled={submitting}
+            className="w-full rounded-xl bg-brand py-2.5 text-sm font-medium text-white disabled:bg-slate-300">
             {submitting ? "登录中…" : "登录"}
           </button>
         </form>
