@@ -7,22 +7,20 @@ export async function GET(): Promise<NextResponse> {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    // Users
+    const H = "$2b$12$Qf7G4Xdvj7movagIZxfUde8kG.nzE1VSjUabO00cd/7g5n.c0dvRW";
     const users = [
-      { id: "usr_admin", username: "admin", passwordHash: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.PQJJvYcAHna3y2", role: "ADMIN", realName: "管理员" },
-      { id: "usr_allen", username: "Allen", passwordHash: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.PQJJvYcAHna3y2", role: "STAFF", realName: "Allen Chen" },
-      { id: "usr_lyj", username: "lyj", passwordHash: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.PQJJvYcAHna3y2", role: "CLIENT", realName: "刘雨江" },
+      { id: "usr_admin", username: "admin", passwordHash: H, role: "ADMIN", realName: "管理员" },
+      { id: "usr_allen", username: "Allen", passwordHash: H, role: "STAFF", realName: "Allen Chen" },
+      { id: "usr_lyj", username: "lyj", passwordHash: H, role: "CLIENT", realName: "刘雨江" },
     ];
     for (const u of users) {
       await prisma.$executeRaw`INSERT OR REPLACE INTO User (id, username, passwordHash, role, realName, isBanned, createdAt, updatedAt)
         VALUES (${u.id}, ${u.username}, ${u.passwordHash}, ${u.role}, ${u.realName}, 0, datetime('now'), datetime('now'))`;
     }
 
-    // PricingSetting
     await prisma.$executeRaw`INSERT OR REPLACE INTO PricingSetting (id, seaPrice, landPrice, createdAt, updatedAt)
       VALUES ('ps_default', 580, 620, datetime('now'), datetime('now'))`;
 
-    // TransportBills - using @map("mark") means actual DB col is "mark"
     const now = new Date().toISOString();
     const ts18 = new Date("2026-04-18").toISOString();
     const ts19 = new Date("2026-04-19").toISOString();
