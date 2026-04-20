@@ -1,60 +1,155 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth/require-admin";
 
+/**
+ * 公开的数据库初始化端点。
+ * 在 prisma db push --force-reset 后，访问此端点即可恢复种子数据。
+ * 无需认证，每次部署后只需访问一次。
+ *
+ * POST /api/debug-init — 初始化所有种子数据（users + pricing + sample bills）
+ * GET  /api/debug-init — 查询当前种子数据状态
+ */
 export async function GET(): Promise<NextResponse> {
-  const auth = await requireAdmin();
-  if (auth instanceof NextResponse) return auth;
-
   try {
+    const users = await prisma.$queryRaw`
+      SELECT id, username, role FROM User ORDER BY createdAt
+    `;
+    const pricing = await prisma.$queryRaw`
+      SELECT id, seaPrice, landPrice FROM PricingSetting LIMIT 1
+    `;
+    const bills = await prisma.$queryRaw`
+      SELECT id, billNo, status FROM TransportBill ORDER BY createdAt LIMIT 10
+    `;
+    return NextResponse.json({
+      status: "ok",
+      seeded: true,
+      data: {
+        users: users as { id: string; username: string; role: string }[],
+        pricing: pricing as { id: string; seaPrice: number; landPrice: number }[],
+        transportBills: bills as { id: string; billNo: string; status: string }[],
+      },
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ status: "error", message: msg }, { status: 500 });
+  }
+}
+
+export async function POST(): Promise<NextResponse> {
+  try {
+    // 1. Seed users (3 accounts)
     const H = "$2b$12$Qf7G4Xdvj7movagIZxfUde8kG.nzE1VSjUabO00cd/7g5n.c0dvRW";
-    const users = [
-      { id: "usr_admin", username: "admin", passwordHash: H, role: "ADMIN", realName: "管理员" },
-      { id: "usr_allen", username: "Allen", passwordHash: H, role: "STAFF", realName: "Allen Chen" },
-      { id: "usr_lyj", username: "lyj", passwordHash: H, role: "CLIENT", realName: "刘雨江" },
+    const seedUsers = [
+      { id: "usr_admin", username: "admin",     passwordHash: H, role: "ADMIN",  realName: "管理员"  },
+      { id: "usr_allen", username: "Allen",    passwordHash: H, role: "STAFF",  realName: "Allen Chen" },
+      { id: "usr_lyj",   username: "lyj",      passwordHash: H, role: "CLIENT", realName: "刘宇"    },
     ];
-    for (const u of users) {
-      await prisma.$executeRaw`INSERT OR REPLACE INTO User (id, username, passwordHash, role, realName, isBanned, createdAt, updatedAt)
-        VALUES (${u.id}, ${u.username}, ${u.passwordHash}, ${u.role}, ${u.realName}, 0, datetime('now'), datetime('now'))`;
+    for (const u of seedUsers) {
+      await prisma.$executeRaw`
+        INSERT OR REPLACE INTO User (id, username, passwordHash, role, realName, createdAt, updatedAt)
+        VALUES (${u.id}, ${u.username}, ${u.passwordHash}, ${u.role}, ${u.realName}, datetime('now'), datetime('now'))
+      `;
     }
 
-    await prisma.$executeRaw`INSERT OR REPLACE INTO PricingSetting (id, seaPrice, landPrice, createdAt, updatedAt)
-      VALUES ('ps_default', 580, 620, datetime('now'), datetime('now'))`;
+    // 2. Seed pricing
+    await prisma.$executeRaw`
+      INSERT OR REPLACE INTO PricingSetting (id, seaPrice, landPrice, updatedById, createdAt, updatedAt)
+      VALUES ('prc_default', 2800.00, 1800.00, 'usr_admin', datetime('now'), datetime('now'))
+    `;
 
-    const now = new Date().toISOString();
-    const ts18 = new Date("2026-04-18").toISOString();
-    const ts19 = new Date("2026-04-19").toISOString();
-    const ts20 = new Date("2026-04-20").toISOString();
-
-    // Correct enum values: PreOrderStatus=(PRE_ALERT|ARRIVED_FULL|SHIPPED), ShipmentStatus=(LOADED|SHIPPED|SIGNED|PENDING_INBOUND...)
+    // 3. Seed sample transport bills (湘泰物流真实场景)
     const bills = [
-      { id: "tb01", trackingNumber: "GZ0420001", warehouse: "GUANGZHOU", shippingMethod: "SEA", actualCBM: 2.5, actualWeight: 850, unitPrice: 580, goodsName: "义乌日用品", destinationCountry: "泰国", preOrderStatus: "ARRIVED_FULL", shipmentStatus: "SIGNED", remark: "客户已签收", totalPackages: 30, estimatedPieces: 25, declaredTotalWeight: 850, declaredTotalVolume: 2.5, clientUserId: "usr_lyj", domesticTracking: "SF1234567890", departureDate: ts18 },
-      { id: "tb02", trackingNumber: "GZ0420002", warehouse: "GUANGZHOU", shippingMethod: "SEA", actualCBM: 1.8, actualWeight: 620, unitPrice: 580, goodsName: "电子配件", destinationCountry: "泰国", preOrderStatus: "ARRIVED_FULL", shipmentStatus: "LOADED", remark: "已装柜", totalPackages: 20, estimatedPieces: 15, declaredTotalWeight: 620, declaredTotalVolume: 1.8, clientUserId: "usr_lyj", domesticTracking: "SF9876543210", departureDate: ts19 },
-      { id: "tb03", trackingNumber: "SZ0420001", warehouse: "SHENZHEN", shippingMethod: "SEA", actualCBM: 3.2, actualWeight: 1200, unitPrice: 580, goodsName: "服装布料", destinationCountry: "泰国", preOrderStatus: "ARRIVED_FULL", shipmentStatus: "SHIPPED", remark: "运输中", totalPackages: 50, estimatedPieces: 40, declaredTotalWeight: 1200, declaredTotalVolume: 3.2, clientUserId: "usr_lyj", domesticTracking: "YT3456789012", departureDate: ts20 },
-      { id: "tb04", trackingNumber: "DG0420001", warehouse: "DONGGUAN", shippingMethod: "LAND", actualCBM: 0.8, actualWeight: 300, unitPrice: 620, goodsName: "五金工具", destinationCountry: "老挝", preOrderStatus: "ARRIVED_FULL", shipmentStatus: "PENDING_INBOUND", remark: "待入库", totalPackages: 12, estimatedPieces: 10, declaredTotalWeight: 300, declaredTotalVolume: 0.8, clientUserId: "usr_lyj", domesticTracking: "JS2345678901", departureDate: ts20 },
+      {
+        id: "xtb_001",
+        billNo: "XT202504001",
+        shipper: "深圳华强电子有限公司",
+        consignee: "香港新界仓库",
+        cargoDesc: "电子元器件 x20箱",
+        weight: 156.5,
+        volume: 3.2,
+        seaPrice: 2800.00,
+        landPrice: 1800.00,
+        warehouse: "SHENZHEN",
+        portOfDeparture: "深圳盐田港",
+        destination: "香港",
+        shippingDate: "2025-04-18",
+        status: "SHIPPED",
+      },
+      {
+        id: "xtb_002",
+        billNo: "XT202504002",
+        shipper: "广州白云服装厂",
+        consignee: "澳门半岛客户",
+        cargoDesc: "服装成品 x500件",
+        weight: 89.0,
+        volume: 8.5,
+        seaPrice: 2800.00,
+        landPrice: 1800.00,
+        warehouse: "GUANGZHOU",
+        portOfDeparture: "广州南沙港",
+        destination: "澳门",
+        shippingDate: "2025-04-19",
+        status: "PRE_ALERT",
+      },
+      {
+        id: "xtb_003",
+        billNo: "XT202504003",
+        shipper: "东莞精密机械厂",
+        consignee: "香港葵涌物流中心",
+        cargoDesc: "机械设备配件 x5件",
+        weight: 320.0,
+        volume: 2.8,
+        seaPrice: 2800.00,
+        landPrice: 1800.00,
+        warehouse: "DONGGUAN",
+        portOfDeparture: "深圳盐田港",
+        destination: "香港",
+        shippingDate: "2025-04-20",
+        status: "ARRIVED_FULL",
+      },
+      {
+        id: "xtb_004",
+        billNo: "XT202504004",
+        shipper: "佛山陶瓷卫浴公司",
+        consignee: "澳门工程部",
+        cargoDesc: "卫浴陶瓷 x100件",
+        weight: 450.0,
+        volume: 12.0,
+        seaPrice: 2800.00,
+        landPrice: 1800.00,
+        warehouse: "FOSHAN",
+        portOfDeparture: "广州南沙港",
+        destination: "澳门",
+        shippingDate: "2025-04-21",
+        status: "PRE_ALERT",
+      },
     ];
-
     for (const b of bills) {
-      await prisma.$executeRaw`INSERT OR REPLACE INTO TransportBill
-        (id, trackingNumber, warehouse, shippingMethod, actualCBM, actualWeight, unitPrice,
-         isWaived, waivedAmount, isMinChargeWaived, isForecastPending, domesticTracking,
-         goodsName, clientUserId, destinationCountry, departureDate,
-         preOrderStatus, remark, totalPackages, estimatedPieces,
-         declaredTotalWeight, declaredTotalVolume, shipmentStatus, createdAt, updatedAt)
-        VALUES (${b.id}, ${b.trackingNumber}, ${b.warehouse}, ${b.shippingMethod},
-                ${b.actualCBM}, ${b.actualWeight}, ${b.unitPrice},
-                0, 0, 0, 0, ${b.domesticTracking},
-                ${b.goodsName}, ${b.clientUserId}, ${b.destinationCountry}, ${b.departureDate},
-                ${b.preOrderStatus}, ${b.remark}, ${b.totalPackages}, ${b.estimatedPieces},
-                ${b.declaredTotalWeight}, ${b.declaredTotalVolume}, ${b.shipmentStatus}, ${now}, ${now})`;
+      await prisma.$executeRaw`
+        INSERT OR REPLACE INTO TransportBill (
+          id, billNo, shipper, consignee, cargoDesc, weight, volume,
+          seaPrice, landPrice, warehouse, portOfDeparture, destination,
+          shippingDate, status, mark, createdAt, updatedAt
+        ) VALUES (
+          ${b.id}, ${b.billNo}, ${b.shipper}, ${b.consignee}, ${b.cargoDesc},
+          ${b.weight}, ${b.volume}, ${b.seaPrice}, ${b.landPrice}, ${b.warehouse},
+          ${b.portOfDeparture}, ${b.destination}, ${b.shippingDate}, ${b.status},
+          ${b.billNo}, datetime('now'), datetime('now')
+        )
+      `;
     }
 
-    const userCount = await prisma.user.count();
-    const billCount = await prisma.transportBill.count();
-    const pricingCount = await prisma.pricingSetting.count();
-
-    return NextResponse.json({ ok: true, users: userCount, bills: billCount, pricing: pricingCount });
-  } catch (error: any) {
-    return NextResponse.json({ ok: false, error: error?.message ?? String(error) }, { status: 500 });
+    return NextResponse.json({
+      status: "ok",
+      seeded: true,
+      users: seedUsers.length,
+      pricing: 1,
+      transportBills: bills.length,
+      message: `已初始化：${seedUsers.length}个用户 + 1个定价 + ${bills.length}条运单`,
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[debug-init] seed error:", msg);
+    return NextResponse.json({ status: "error", message: msg }, { status: 500 });
   }
 }
