@@ -22,7 +22,7 @@ export async function GET(): Promise<NextResponse> {
     await prisma.$executeRaw`INSERT OR REPLACE INTO PricingSetting (id, seaPrice, landPrice, createdAt, updatedAt)
       VALUES ('ps_default', 580, 620, datetime('now'), datetime('now'))`;
 
-    // TransportBills
+    // TransportBills - using @map("mark") means actual DB col is "mark"
     const now = new Date().toISOString();
     const ts18 = new Date("2026-04-18").toISOString();
     const ts19 = new Date("2026-04-19").toISOString();
@@ -40,13 +40,13 @@ export async function GET(): Promise<NextResponse> {
         (id, trackingNumber, warehouse, shippingMethod, actualCBM, actualWeight, unitPrice,
          isWaived, waivedAmount, isMinChargeWaived, isForecastPending, domesticTracking,
          goodsName, clientUserId, destinationCountry, departureDate,
-         preOrderStatus, remark, shippingMark, totalPackages, estimatedPieces,
+         preOrderStatus, remark, totalPackages, estimatedPieces,
          declaredTotalWeight, declaredTotalVolume, shipmentStatus, createdAt, updatedAt)
         VALUES (${b.id}, ${b.trackingNumber}, ${b.warehouse}, ${b.shippingMethod},
                 ${b.actualCBM}, ${b.actualWeight}, ${b.unitPrice},
                 0, 0, 0, 0, ${b.domesticTracking},
                 ${b.goodsName}, ${b.clientUserId}, ${b.destinationCountry}, ${b.departureDate},
-                ${b.preOrderStatus}, ${b.remark}, '', ${b.totalPackages}, ${b.estimatedPieces},
+                ${b.preOrderStatus}, ${b.remark}, ${b.totalPackages}, ${b.estimatedPieces},
                 ${b.declaredTotalWeight}, ${b.declaredTotalVolume}, ${b.shipmentStatus}, ${now}, ${now})`;
     }
 
