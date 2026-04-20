@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
 /**
- * 诊断 API：暴露真实错误信息，帮助调试 500 问题。
+ * Diagnostic endpoint - returns detailed system info for debugging 500 errors.
  */
 export async function GET(): Promise<NextResponse> {
   try {
@@ -24,23 +24,32 @@ export async function GET(): Promise<NextResponse> {
 
     // Test 2: PricingSetting table
     let pricing_error = "";
-    let pricing_data = null;
+    let pricing_count = -1;
     try {
-      pricing_data = await prisma.prisma pricingSetting.findMany({});
+      pricing_count = await prisma.pricingSetting.count();
     } catch (e: any) {
       pricing_error = e?.message ?? String(e);
     }
 
     // Test 3: TransportBill table
     let bills_error = "";
-    let bills_count = 0;
+    let bills_count = -1;
     try {
       bills_count = await prisma.transportBill.count();
     } catch (e: any) {
       bills_error = e?.message ?? String(e);
     }
 
-    // Test 4: calculateCharge import
+    // Test 4: User table
+    let users_error = "";
+    let users_count = -1;
+    try {
+      users_count = await prisma.user.count();
+    } catch (e: any) {
+      users_error = e?.message ?? String(e);
+    }
+
+    // Test 5: calculateCharge import
     let billing_ok = false;
     let billing_error = "";
     try {
@@ -59,10 +68,12 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({
       prisma_ok,
       prisma_error,
+      pricing_count,
       pricing_error,
-      pricing_data: pricing_data ? `count=${(pricing_data as any[]).length}` : null,
-      bills_error,
       bills_count,
+      bills_error,
+      users_count,
+      users_error,
       billing_ok,
       billing_error,
       env: {
