@@ -137,6 +137,12 @@ model TransportBill {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([clientUserId, shipmentStatus, createdAt])
+  @@index([preOrderStatus, createdAt])
+  @@index([manifestId])
+  @@index([trackingNumber])
+  @@index([createdAt])
 }
 
 /// 装柜管理主表

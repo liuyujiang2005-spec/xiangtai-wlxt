@@ -24,7 +24,7 @@ export function AuthBar() {
    */
   const loadMe = useCallback(async (): Promise<void> => {
     try {
-      const response = await fetch("/api/auth/me", { credentials: "include", credentials: "include" });
+      const response = await fetch("/api/auth/me", { credentials: "include" });
       if (response.status === 403) {
         let data: { banned?: boolean } = {};
         try {

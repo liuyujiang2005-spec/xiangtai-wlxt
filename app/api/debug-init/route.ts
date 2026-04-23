@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 /**
  * 公开的数据库初始化端点。
@@ -8,11 +9,13 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(): Promise<NextResponse> {
   try {
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
     const [users, pricing, bills] = await Promise.all([
       prisma.user.findMany({ select: { id: true, username: true, role: true } }),
       prisma.pricingSetting.findMany({ select: { id: true, seaPrice: true, landPrice: true } }),
       prisma.transportBill.findMany({
-        select: { id: true, trackingNumber: true, status: true },
+        select: { id: true, trackingNumber: true, shipmentStatus: true },
         take: 10,
       }),
     ]);
@@ -24,6 +27,8 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(): Promise<NextResponse> {
   try {
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
     // 1. Seed users (3 accounts, admin/Allen/lyj)
     const H = "$2b$12$Qf7G4Xdvj7movagIZxfUde8kG.nzE1VSjUabO00cd/7g5n.c0dvRW";
     const seedUsers = [
