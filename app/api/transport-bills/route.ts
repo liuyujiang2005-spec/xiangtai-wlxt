@@ -252,6 +252,8 @@ export async function GET(request: Request): Promise<NextResponse> {
               { domesticTracking: { contains: searchTerm } },
               { containerTruckNo: { contains: searchTerm } },
               { clientUser: { username: { contains: searchTerm } } },
+              { goodsName: { contains: searchTerm } },
+              { billProducts: { some: { productName: { contains: searchTerm } } } },
             ],
           }
         : {}),

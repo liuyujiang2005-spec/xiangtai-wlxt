@@ -82,10 +82,30 @@ export default function StaffDirectInboundPage(): React.ReactNode {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [successNo, setSuccessNo] = useState<string>("");
+  const [billQuery, setBillQuery] = useState("");
+  const [searchingBill, setSearchingBill] = useState(false);
+  const [foundBills, setFoundBills] = useState<any[]>([]);
 
   /**
-   * 拉取客户列表供员工绑定。
+   * 搜索运单
    */
+  async function searchBills() {
+    const q = billQuery.trim();
+    if (!q) return;
+    setSearchingBill(true);
+    try {
+      const response = await fetch(`/api/transport-bills?query=${encodeURIComponent(q)}`, {
+        credentials: "include",
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      setFoundBills(data.list || []);
+    } catch {
+      setFoundBills([]);
+    } finally {
+      setSearchingBill(false);
+    }
+  }
   useEffect(() => {
     void (async () => {
       try {
@@ -305,7 +325,7 @@ export default function StaffDirectInboundPage(): React.ReactNode {
             </span>
           </label>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
           <div className="relative text-sm sm:col-span-2">
             <span className="mb-1 block text-slate-600">所属客户搜索</span>
             <input
@@ -340,6 +360,39 @@ export default function StaffDirectInboundPage(): React.ReactNode {
               </ul>
             )}
           </div>
+          <label className="text-sm sm:col-span-2">
+            <span className="mb-1 block text-slate-600">运单搜索（选填）</span>
+            <div className="flex gap-2">
+              <input 
+                value={billQuery}
+                onChange={e => setBillQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); searchBills(); } }}
+                placeholder="输入单号或产品名模糊搜索"
+                className="w-full rounded border border-slate-200 px-2 py-2" 
+              />
+              <button 
+                type="button" 
+                onClick={searchBills}
+                disabled={searchingBill}
+                className="rounded bg-slate-100 px-4 py-2 font-medium text-slate-700 hover:bg-slate-200"
+              >
+                {searchingBill ? "..." : "搜索"}
+              </button>
+            </div>
+            {foundBills.length > 0 && (
+              <div className="mt-2 max-h-40 overflow-y-auto rounded border border-slate-200 bg-white p-2">
+                <p className="mb-2 text-xs text-slate-500">匹配的运单记录：</p>
+                <ul className="space-y-2">
+                  {foundBills.map((b: any) => (
+                    <li key={b.id} className="rounded bg-slate-50 p-2 text-xs">
+                      <div className="font-medium text-brand-dark">{b.trackingNumber} <span className="font-normal text-slate-500">({b.warehouse === 'YIWU' ? '义乌' : b.warehouse === 'GUANGZHOU' ? '广州' : b.warehouse === 'SHENZHEN' ? '深圳' : '东莞'})</span></div>
+                      <div className="mt-1 text-slate-600">客户: {b.clientLogin} | 唛头: {b.shippingMark} | 品名: {b.goodsName || '未录入'}</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </label>
         </div>
         <label className="block text-sm">
           <span className="mb-1 block text-slate-600">唛头（自动关联客户登录名）</span>
