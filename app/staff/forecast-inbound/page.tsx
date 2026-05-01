@@ -300,10 +300,16 @@ export default function StaffForecastInboundPage(): React.ReactNode {
         <div className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
           <Link
             href="/staff/direct-inbound"
+            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 flex items-center gap-1"
+          >
+            新增
+          </Link>
+          <button
+            type="button"
             className="rounded border border-slate-300 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"
           >
-            直接入库（XT）
-          </Link>
+            导出
+          </button>
         </div>
       </div>
 

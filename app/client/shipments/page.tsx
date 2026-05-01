@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Ship } from "lucide-react";
+import Link from "next/link";
 import { CurrencyAmount } from "@/app/components/CurrencyAmount";
 
 type Row = {
@@ -119,6 +120,12 @@ export default function ClientShipmentsPage() {
         </div>
 
         <div className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
+          <Link
+            href="/customer/pre-order/new"
+            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 flex items-center gap-1"
+          >
+            新增
+          </Link>
           <button
             type="button"
             className="rounded border border-slate-300 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"

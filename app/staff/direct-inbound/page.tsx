@@ -448,8 +448,54 @@ export default function StaffDirectInboundPage(): React.ReactNode {
         </div>
 
         <div className="flex items-center gap-3">
-          <button type="button" onClick={addRow} className="rounded border border-slate-200 px-3 py-1.5 text-sm">+ 新增行</button>
-          <p className="text-xs text-slate-600">汇总：{summary.totalBoxes} 箱 / {summary.totalWeight.toFixed(3)} KG / {summary.totalVolume.toFixed(4)} CBM</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="请输入国内单号/快递单号"
+              className="w-64 rounded border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-brand"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim();
+                  if (val) {
+                    setRows((prev) => {
+                      const newRow = createEmptyRow();
+                      newRow.domesticTracking = val;
+                      if (prev.length === 1 && !prev[0].domesticTracking && !prev[0].productName) {
+                        return [newRow];
+                      }
+                      return [newRow, ...prev];
+                    });
+                    e.currentTarget.value = '';
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                const val = input.value.trim();
+                if (val) {
+                  setRows((prev) => {
+                    const newRow = createEmptyRow();
+                    newRow.domesticTracking = val;
+                    if (prev.length === 1 && !prev[0].domesticTracking && !prev[0].productName) {
+                      return [newRow];
+                    }
+                    return [newRow, ...prev];
+                  });
+                  input.value = '';
+                } else {
+                  addRow();
+                }
+              }}
+              className="inline-flex items-center gap-1 rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600"
+            >
+              新增单号
+            </button>
+          </div>
+          <p className="text-xs text-slate-600 ml-auto">汇总：{summary.totalBoxes} 箱 / {summary.totalWeight.toFixed(3)} KG / {summary.totalVolume.toFixed(4)} CBM</p>
         </div>
 
         {chargePreview ? (

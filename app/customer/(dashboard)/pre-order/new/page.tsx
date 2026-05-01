@@ -521,14 +521,55 @@ function CustomerPreOrderNewForm() {
             <h2 className="text-sm font-semibold text-brand-dark">
               预录单产品
             </h2>
-            <button
-              type="button"
-              onClick={addProductRow}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-brand-dark hover:bg-slate-50"
-            >
-              <Plus className="h-4 w-4" />
-              新增
-            </button>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="请输入国内单号/快递单号"
+                className="w-64 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-brand"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (val) {
+                      setProducts((prev) => {
+                        const newRow = emptyProductRow();
+                        newRow.domesticTracking = val;
+                        // 如果当前只有一行空数据，则替换它
+                        if (prev.length === 1 && !prev[0].domesticTracking && !prev[0].productName) {
+                          return [newRow];
+                        }
+                        return [newRow, ...prev];
+                      });
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                  const val = input.value.trim();
+                  if (val) {
+                    setProducts((prev) => {
+                      const newRow = emptyProductRow();
+                      newRow.domesticTracking = val;
+                      if (prev.length === 1 && !prev[0].domesticTracking && !prev[0].productName) {
+                        return [newRow];
+                      }
+                      return [newRow, ...prev];
+                    });
+                    input.value = '';
+                  } else {
+                    addProductRow();
+                  }
+                }}
+                className="inline-flex items-center gap-1 rounded-lg bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600"
+              >
+                <Plus className="h-4 w-4" />
+                新增单号
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-slate-200">
