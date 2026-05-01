@@ -266,38 +266,87 @@ export default function StaffForecastInboundPage(): React.ReactNode {
     <main className="mx-auto w-full max-w-[95vw] px-4 py-6">
       <h1 className="text-2xl font-semibold text-brand">客户预报单查询</h1>
       <p className="mt-2 text-sm text-slate-600">仅展示 YB 客户预报单，可执行“转正式单入库”。</p>
-      <div className="mt-4 flex gap-2">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="输入YB单号搜索" className="w-72 rounded border border-slate-200 px-3 py-2 text-sm" />
-        <button type="button" disabled={loading} onClick={() => { void loadForecasts(query); }} className="rounded bg-brand px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{loading ? "查询中..." : "查询"}</button>
-        <Link href="/staff/direct-inbound" className="rounded border border-slate-200 px-4 py-2 text-sm">直接入库（XT）</Link>
+      <div className="mt-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="flex flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600 whitespace-nowrap">单号:</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="输入YB单号搜索"
+              className="rounded border border-slate-200 px-3 py-1.5 text-sm w-48"
+            />
+          </div>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => { void loadForecasts(query); }}
+            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 flex items-center gap-1"
+          >
+            {loading ? "查询中..." : "查询"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              void loadForecasts("");
+            }}
+            className="rounded border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"
+          >
+            重置
+          </button>
+        </div>
+
+        <div className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
+          <Link
+            href="/staff/direct-inbound"
+            className="rounded border border-slate-300 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"
+          >
+            直接入库（XT）
+          </Link>
+        </div>
       </div>
+
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-600">
-            <tr>
-              <th className="px-3 py-2 text-left">单号</th>
-              <th className="px-3 py-2 text-left">货名</th>
-              <th className="px-3 py-2 text-left">国内单号</th>
-              <th className="px-3 py-2 text-left">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-t border-slate-100">
-                <td className="px-3 py-2 font-mono text-brand">{r.trackingNumber}</td>
-                <td className="px-3 py-2">{r.goodsName ?? "—"}</td>
-                <td className="px-3 py-2">{r.domesticTracking ?? "—"}</td>
-                <td className="px-3 py-2">
-                  <button type="button" onClick={() => { void openConvert(r); }} className="rounded border border-slate-300 px-3 py-1.5 text-xs">转正式单入库</button>
-                </td>
+      
+      <div className="mt-4 overflow-hidden rounded border border-slate-200 bg-white">
+        <div className="bg-blue-50 px-4 py-2 border-b border-blue-100 flex items-center gap-2">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white font-bold text-xs">i</div>
+          <span className="text-sm text-slate-700">预报单列表</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <th className="px-3 py-3 text-center font-medium w-12">
+                  <input type="checkbox" disabled />
+                </th>
+                <th className="px-3 py-3 text-left font-medium">单号</th>
+                <th className="px-3 py-3 text-left font-medium">货名</th>
+                <th className="px-3 py-3 text-left font-medium">国内单号</th>
+                <th className="px-3 py-3 text-left font-medium">操作</th>
               </tr>
-            ))}
-            {!loading && rows.length === 0 ? (
-              <tr><td colSpan={4} className="px-3 py-8 text-center text-slate-500">暂无 YB 预报单</td></tr>
-            ) : null}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="px-3 py-3 text-center w-12">
+                    <input type="checkbox" disabled />
+                  </td>
+                  <td className="px-3 py-3 font-mono text-slate-700">{r.trackingNumber}</td>
+                  <td className="px-3 py-3 text-slate-700">{r.goodsName ?? "—"}</td>
+                  <td className="px-3 py-3 text-slate-700">{r.domesticTracking ?? "—"}</td>
+                  <td className="px-3 py-3">
+                    <button type="button" onClick={() => { void openConvert(r); }} className="rounded border border-blue-500 text-blue-500 hover:bg-blue-50 px-3 py-1.5 text-xs transition-colors">转正式单入库</button>
+                  </td>
+                </tr>
+              ))}
+              {!loading && rows.length === 0 ? (
+                <tr><td colSpan={5} className="px-3 py-8 text-center text-slate-500">暂无 YB 预报单</td></tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {current ? (
