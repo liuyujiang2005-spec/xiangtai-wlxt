@@ -494,6 +494,54 @@ export default function StaffDirectInboundPage(): React.ReactNode {
         </div>
       </div>
 
+      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+          搜索订单
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="text-sm">
+            <span className="mb-1.5 block font-medium text-slate-700">运单搜索（选填）</span>
+            <input
+              value={billQuery}
+              onChange={(e) => setBillQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void searchBills();
+                }
+              }}
+              placeholder="输入单号或产品名模糊搜索"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none ring-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={() => {
+                void searchBills();
+              }}
+              disabled={searchingBill}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50"
+            >
+              {searchingBill ? "..." : "搜索"}
+            </button>
+          </div>
+        </div>
+        {foundBills.length > 0 ? (
+          <div className="mt-3 max-h-40 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/70 p-2">
+            <p className="mb-2 text-xs text-slate-500">匹配的运单记录：</p>
+            <ul className="space-y-2">
+              {foundBills.map((bill) => (
+                <li key={bill.id} className="rounded bg-white p-2 text-xs">
+                  <div className="font-medium text-brand-dark">{bill.trackingNumber}</div>
+                  <div className="mt-1 text-slate-600">客户: {bill.clientLogin ?? "—"}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+
       {listError ? <p className="mt-3 text-sm text-red-600">{listError}</p> : null}
 
       <div className="mt-4 overflow-hidden rounded border border-slate-200 bg-white">
@@ -651,8 +699,8 @@ export default function StaffDirectInboundPage(): React.ReactNode {
               </div>
 
               <div className="space-y-4 border-t border-slate-100 pt-5">
-                <div className="text-xs font-medium uppercase tracking-wide text-slate-500">客户与运单</div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="text-xs font-medium uppercase tracking-wide text-slate-500">客户信息</div>
+                <div className="grid grid-cols-1 gap-4">
                   <div className="relative text-sm">
                     <span className="mb-1.5 block font-medium text-slate-700">所属客户搜索</span>
                     <input
@@ -689,51 +737,6 @@ export default function StaffDirectInboundPage(): React.ReactNode {
                     </ul>
                   ) : null}
                 </div>
-
-                  <label className="text-sm">
-                    <span className="mb-1.5 block font-medium text-slate-700">运单搜索（选填）</span>
-                    <div className="flex gap-2">
-                      <input
-                        value={billQuery}
-                        onChange={(e) => setBillQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            void searchBills();
-                          }
-                        }}
-                        placeholder="输入单号或产品名模糊搜索"
-                        className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none ring-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          void searchBills();
-                        }}
-                        disabled={searchingBill}
-                        className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50"
-                      >
-                        {searchingBill ? "..." : "搜索"}
-                      </button>
-                    </div>
-                  {foundBills.length > 0 ? (
-                    <div className="mt-2 max-h-40 overflow-y-auto rounded border border-slate-200 bg-white p-2">
-                      <p className="mb-2 text-xs text-slate-500">匹配的运单记录：</p>
-                      <ul className="space-y-2">
-                        {foundBills.map((bill) => (
-                          <li key={bill.id} className="rounded bg-slate-50 p-2 text-xs">
-                            <div className="font-medium text-brand-dark">
-                              {bill.trackingNumber}
-                            </div>
-                            <div className="mt-1 text-slate-600">
-                              客户: {bill.clientLogin ?? "—"}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </label>
               </div>
               </div>
 
