@@ -525,10 +525,10 @@ export default function TransportBillsPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 text-slate-900 sm:px-6">
+    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 text-brand-dark sm:px-6">
       <header className="mb-4">
         <h1 className="text-2xl font-semibold text-brand">运单管理列表</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-600">
           湘泰物流 · 体积/重量/方式与费用（低消按海运 0.5 / 陆运 0.3 CBM）
         </p>
         <p className="mt-2">
@@ -546,7 +546,7 @@ export default function TransportBillsPage() {
           onSubmit={handleSearchSubmit}
           className="flex flex-1 items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3"
         >
-          <Search className="h-4 w-4 text-slate-400" />
+          <Search className="h-4 w-4 text-slate-500" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -562,7 +562,7 @@ export default function TransportBillsPage() {
           </button>
         </form>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-500">筛选</span>
+          <span className="text-xs text-slate-600">筛选</span>
           <button
             type="button"
             onClick={() => {
@@ -602,7 +602,7 @@ export default function TransportBillsPage() {
         ) : null}
       </div>
 
-      <p className="mb-3 text-sm text-slate-500">
+      <p className="mb-3 text-sm text-slate-600">
         {loading ? "加载中..." : totalText}
       </p>
 
@@ -632,14 +632,14 @@ export default function TransportBillsPage() {
                   {row.trackingNumber}
                 </p>
                 {row.isForecastPending ? (
-                  <span className="rounded-full bg-slate-300/80 px-2 py-0.5 text-xs font-medium text-slate-800">
+                  <span className="rounded-full bg-slate-300/80 px-2 py-0.5 text-xs font-medium text-brand-dark">
                     预报
                   </span>
                 ) : null}
               </div>
               {row.isForecastPending &&
               (row.domesticTracking || row.goodsName) ? (
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-600">
                   {row.domesticTracking
                     ? `快递：${row.domesticTracking}`
                     : null}
@@ -651,21 +651,21 @@ export default function TransportBillsPage() {
                 </p>
               ) : null}
               <p className="mt-2 text-xs text-slate-600">
-                <span className="text-slate-500">唛头：</span>
+                <span className="text-slate-600">唛头：</span>
                 <span className="font-mono font-medium">
                   {displayShippingMark(row)}
                 </span>
               </p>
               <div className="mt-2 grid grid-cols-2 gap-y-2 text-sm">
-                <p className="text-slate-500">仓库</p>
+                <p className="text-slate-600">仓库</p>
                 <p>{WAREHOUSE_LABEL[row.warehouse]}</p>
-                <p className="text-slate-500">运输方式</p>
+                <p className="text-slate-600">运输方式</p>
                 <p>{SHIPPING_LABEL[row.shippingMethod]}</p>
-                <p className="text-slate-500">实际体积</p>
+                <p className="text-slate-600">实际体积</p>
                 <p>{row.actualCBM.toFixed(3)} CBM</p>
-                <p className="text-slate-500">实际重量</p>
+                <p className="text-slate-600">实际重量</p>
                 <p>{row.actualWeight.toFixed(2)} KG</p>
-                <p className="text-slate-500">最终费用</p>
+                <p className="text-slate-600">最终费用</p>
                 <p className="flex flex-wrap items-center gap-2">
                   <CurrencyAmount value={row.charge.finalCharge} />
                   {row.isMinChargeWaived ? (
@@ -688,7 +688,7 @@ export default function TransportBillsPage() {
                       onClick={() => {
                         openConfirmModal(row);
                       }}
-                      className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-slate-500 bg-white px-2.5 py-2 text-sm font-medium text-slate-800"
+                      className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-slate-500 bg-white px-2.5 py-2 text-sm font-medium text-brand-dark"
                     >
                       <PackageCheck className="h-4 w-4" />
                       {confirmingId === row.id ? "处理中..." : "确认入库"}
@@ -705,7 +705,7 @@ export default function TransportBillsPage() {
                       onClick={() => {
                         void handleWaive(row.id);
                       }}
-                      className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-brand/30 px-2.5 py-2 text-sm font-medium text-brand disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                      className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-brand/30 px-2.5 py-2 text-sm font-medium text-brand disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-500"
                     >
                       <ShieldCheck className="h-4 w-4" />
                       {waivingId === row.id ? "处理中..." : "豁免低消"}
@@ -716,7 +716,7 @@ export default function TransportBillsPage() {
             </article>
           ))}
           {!loading && rows.length === 0 ? (
-            <p className="rounded-xl border border-slate-200 px-3 py-8 text-center text-sm text-slate-400">
+            <p className="rounded-xl border border-slate-200 px-3 py-8 text-center text-sm text-slate-500">
               暂无匹配运单
             </p>
           ) : null}
@@ -758,14 +758,14 @@ export default function TransportBillsPage() {
                         {row.trackingNumber}
                       </span>
                       {row.isForecastPending ? (
-                        <span className="rounded-full bg-slate-300/90 px-2 py-0.5 text-xs font-normal text-slate-800">
+                        <span className="rounded-full bg-slate-300/90 px-2 py-0.5 text-xs font-normal text-brand-dark">
                           预报
                         </span>
                       ) : null}
                     </div>
                     {row.isForecastPending &&
                     (row.domesticTracking || row.goodsName) ? (
-                      <p className="mt-1 max-w-xs text-xs text-slate-500">
+                      <p className="mt-1 max-w-xs text-xs text-slate-600">
                         {row.domesticTracking
                           ? `快递 ${row.domesticTracking}`
                           : ""}
@@ -776,7 +776,7 @@ export default function TransportBillsPage() {
                       </p>
                     ) : null}
                   </td>
-                  <td className="max-w-[100px] truncate px-2 py-2 align-middle font-mono text-xs text-slate-800">
+                  <td className="max-w-[100px] truncate px-2 py-2 align-middle font-mono text-xs text-brand-dark">
                     {displayShippingMark(row)}
                   </td>
                   <td className="px-3 py-3">{WAREHOUSE_LABEL[row.warehouse]}</td>
@@ -786,7 +786,7 @@ export default function TransportBillsPage() {
                   <td className="px-3 py-3">{row.actualCBM.toFixed(3)} CBM</td>
                   <td className="px-3 py-3">{row.actualWeight.toFixed(2)} KG</td>
                   <td className="px-3 py-3">
-                    <div className="flex flex-wrap items-center gap-2 text-slate-800">
+                    <div className="flex flex-wrap items-center gap-2 text-brand-dark">
                       <CurrencyAmount value={row.charge.finalCharge} />
                       {row.isMinChargeWaived ? (
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-normal text-emerald-700">
@@ -809,7 +809,7 @@ export default function TransportBillsPage() {
                             onClick={() => {
                               openConfirmModal(row);
                             }}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-500 px-2.5 py-1.5 text-xs font-medium text-slate-800"
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-500 px-2.5 py-1.5 text-xs font-medium text-brand-dark"
                           >
                             <PackageCheck className="h-3.5 w-3.5" />
                             {confirmingId === row.id ? "处理中..." : "确认入库"}
@@ -826,7 +826,7 @@ export default function TransportBillsPage() {
                             onClick={() => {
                               void handleWaive(row.id);
                             }}
-                            className="inline-flex items-center gap-1 rounded-lg border border-brand/30 px-2.5 py-1.5 text-xs font-medium text-brand disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                            className="inline-flex items-center gap-1 rounded-lg border border-brand/30 px-2.5 py-1.5 text-xs font-medium text-brand disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-500"
                           >
                             <ShieldCheck className="h-3.5 w-3.5" />
                             {waivingId === row.id ? "处理中..." : "豁免低消"}
@@ -841,7 +841,7 @@ export default function TransportBillsPage() {
                 <tr>
                   <td
                     colSpan={emptyColSpan}
-                    className="px-3 py-8 text-center text-slate-400"
+                    className="px-3 py-8 text-center text-slate-500"
                   >
                     暂无匹配运单
                   </td>
@@ -856,7 +856,7 @@ export default function TransportBillsPage() {
         <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 sm:px-6">
           <p className="text-sm text-slate-700">
             第 <span className="font-medium">{pagination.page}</span> 页，共 <span className="font-medium">{pagination.totalPages}</span> 页
-            <span className="ml-2 text-xs text-slate-500">（共 {pagination.total} 条）</span>
+            <span className="ml-2 text-xs text-slate-600">（共 {pagination.total} 条）</span>
           </p>
           <div className="flex gap-2">
             <button
@@ -899,14 +899,14 @@ export default function TransportBillsPage() {
           >
             <h2
               id="confirm-inbound-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-brand-dark"
             >
               确认入库
             </h2>
             <p className="mt-1 font-mono text-sm text-brand">
               {confirmRow.trackingNumber}
             </p>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-slate-600">
               预报单将转为正式单号（优先去除 YB 前缀）。请按 SKU 逐行录入，系统自动汇总体积与重量并联动计费。
             </p>
 
@@ -1028,11 +1028,11 @@ export default function TransportBillsPage() {
 
             {previewCharge ? (
               <div className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-sm">
-                <p className="text-slate-500">
+                <p className="text-slate-600">
                   汇总：{ciSummary.totalBoxes} 箱 / {ciSummary.totalWeight.toFixed(3)} KG / {ciSummary.totalVolume.toFixed(4)} CBM
                 </p>
-                <p className="text-slate-500">预估最终待支付</p>
-                <p className="mt-1 text-base font-semibold text-slate-900">
+                <p className="text-slate-600">预估最终待支付</p>
+                <p className="mt-1 text-base font-semibold text-brand-dark">
                   <CurrencyAmount value={previewCharge.finalCharge} />
                   {!ciWaive && previewCharge.minChargeDifferenceFee > 0 ? (
                     <span className="ml-2 text-xs font-normal text-amber-700">
@@ -1042,7 +1042,7 @@ export default function TransportBillsPage() {
                 </p>
               </div>
             ) : (
-              <p className="mt-3 text-xs text-slate-400">
+              <p className="mt-3 text-xs text-slate-500">
                 请填写有效产品明细与单价以预览金额。
               </p>
             )}

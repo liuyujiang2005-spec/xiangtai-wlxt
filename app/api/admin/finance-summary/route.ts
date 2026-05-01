@@ -8,8 +8,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
  */
 export async function GET(): Promise<NextResponse> {
   const auth = await requireAdmin();
-  if (auth instanceof NextResponse) {
-    return auth;
+  if (auth instanceof Response || (auth && 'status' in auth)) {
+    return auth as NextResponse;
   }
 
   const bills = await prisma.transportBill.findMany({

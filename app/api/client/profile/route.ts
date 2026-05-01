@@ -21,8 +21,8 @@ const ProfileSchema = z.object({
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
 
   const user = await prisma.user.findUnique({
@@ -45,8 +45,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
 
   try {

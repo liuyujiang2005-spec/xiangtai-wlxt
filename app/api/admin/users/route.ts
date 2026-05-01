@@ -41,8 +41,8 @@ function normalizeOptionalRealName(
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
 
   const users = await prisma.user.findMany({
@@ -95,8 +95,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
 
   try {

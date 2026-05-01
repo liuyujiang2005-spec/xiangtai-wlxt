@@ -105,7 +105,7 @@ export function LoginForm() {
             <LogIn className="h-6 w-6 text-brand" />
           </div>
           <div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">系统登录</h2>
+            <h2 className="text-xl font-extrabold tracking-tight text-brand-dark">系统登录</h2>
             <p className="text-sm font-semibold text-slate-600">欢迎回来，请登录您的账号</p>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block text-sm">
-            <span className="mb-1 block font-semibold text-slate-800">账号</span>
+            <span className="mb-1 block font-semibold text-brand-dark">账号</span>
             <input
               type="text"
               autoComplete="username"
@@ -134,7 +134,7 @@ export function LoginForm() {
             />
           </label>
           <label className="block text-sm">
-              <span className="mb-1 block font-semibold text-slate-800">密码</span>
+              <span className="mb-1 block font-semibold text-brand-dark">密码</span>
               <input
                 type="password"
               autoComplete="current-password"

@@ -106,7 +106,7 @@ export default function CustomerShipmentDetailPage(props: {
 
   if (!id || loading) {
     return (
-      <div className="min-h-screen bg-[#f0f2f5] px-4 py-8 text-sm text-slate-500">
+      <div className="min-h-screen bg-[#f0f2f5] px-4 py-8 text-sm text-slate-600">
         加载中…
       </div>
     );
@@ -150,7 +150,7 @@ export default function CustomerShipmentDetailPage(props: {
                 {bill.trackingNumber}
               </p>
               <p className="mt-1 text-xs text-[rgba(0,0,0,0.45)]">
-                唛头：<span className="font-mono font-medium text-slate-800">{markDisplay}</span>
+                唛头：<span className="font-mono font-medium text-brand-dark">{markDisplay}</span>
                 {" · "}
                 状态：{statusLabel}
               </p>

@@ -14,8 +14,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   const { id } = await context.params;
   const bill = await prisma.transportBill.findUnique({

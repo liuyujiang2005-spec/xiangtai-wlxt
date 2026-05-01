@@ -449,7 +449,7 @@ export default function StaffContainerLoadingPage(): React.ReactNode {
                 ))}
                 {list.length === 0 && !loadingList ? (
                   <tr>
-                    <td colSpan={6} className="px-3 py-8 text-center text-slate-400">
+                    <td colSpan={6} className="px-3 py-8 text-center text-slate-500">
                       暂无装柜任务
                     </td>
                   </tr>
@@ -463,7 +463,7 @@ export default function StaffContainerLoadingPage(): React.ReactNode {
           <div className="border-b border-slate-100 px-4 py-3">
             <p className="text-sm font-medium text-slate-700">待装柜清单</p>
             {detail ? (
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-600">
                 柜号：<span className="font-mono text-slate-700">{detail.manifestNo}</span>
                 {" · "}
                 状态：{STATUS_LABEL[detail.status]}
@@ -506,7 +506,7 @@ export default function StaffContainerLoadingPage(): React.ReactNode {
                 ) : null}
               </div>
             ) : (
-              <p className="text-sm text-slate-400">请选择左侧装柜任务。</p>
+              <p className="text-sm text-slate-500">请选择左侧装柜任务。</p>
             )}
 
             <div className="flex gap-2">
@@ -583,7 +583,7 @@ export default function StaffContainerLoadingPage(): React.ReactNode {
                   ))}
                   {detail && detail.bills.length === 0 && !loadingDetail ? (
                     <tr>
-                      <td colSpan={5} className="px-2 py-6 text-center text-slate-400">
+                      <td colSpan={5} className="px-2 py-6 text-center text-slate-500">
                         当前柜号尚未关联运单
                       </td>
                     </tr>

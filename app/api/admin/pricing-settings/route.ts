@@ -14,8 +14,8 @@ const UpdateBodySchema = z.object({
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   try {
     const setting = await prisma.pricingSetting.findFirst({
@@ -41,8 +41,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   try {
     const body = UpdateBodySchema.parse(await request.json());

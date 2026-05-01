@@ -294,7 +294,7 @@ export default function StaffForecastInboundPage(): React.ReactNode {
               </tr>
             ))}
             {!loading && rows.length === 0 ? (
-              <tr><td colSpan={4} className="px-3 py-8 text-center text-slate-400">暂无 YB 预报单</td></tr>
+              <tr><td colSpan={4} className="px-3 py-8 text-center text-slate-500">暂无 YB 预报单</td></tr>
             ) : null}
           </tbody>
         </table>
@@ -304,15 +304,14 @@ export default function StaffForecastInboundPage(): React.ReactNode {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="max-h-[90vh] w-full max-w-[96vw] overflow-y-auto rounded-xl bg-white p-4">
             <h2 className="text-lg font-semibold">转正式单入库</h2>
-            <p className="mt-1 text-xs text-slate-500">预报单 {current.trackingNumber} 将转为 XT 正式单。</p>
+            <p className="mt-1 text-xs text-slate-600">预报单 {current.trackingNumber} 将转为 XT 正式单。</p>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="text-sm"><span className="mb-1 block text-slate-600">运输方式</span><select value={method} onChange={(e)=>setMethod(e.target.value as ShippingMethod)} className="w-full rounded border border-slate-200 px-2 py-2"><option value="SEA">海运</option><option value="LAND">陆运</option></select></label>
               <label className="text-sm"><span className="mb-1 block text-slate-600">单价</span><input value={price} onChange={(e)=>setPrice(e.target.value)} className="w-full rounded border border-slate-200 px-2 py-2" /></label>
-              <label className="flex items-center gap-2 pt-6 text-sm"><input type="checkbox" checked={waive} onChange={(e)=>setWaive(e.target.checked)} />豁免低消</label>
             </div>
             <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200">
               <table className="min-w-[1400px] w-full text-xs">
-                <thead className="bg-slate-50"><tr><th className="px-2 py-2 text-left">产品名称</th><th className="px-2 py-2 text-left">箱数</th><th className="px-2 py-2 text-left">类型</th><th className="px-2 py-2 text-left">每箱数</th><th className="px-2 py-2 text-left">国内单号</th><th className="px-2 py-2 text-left">入库单号</th><th className="px-2 py-2 text-left">SKU</th><th className="px-2 py-2 text-left">箱号</th><th className="px-2 py-2 text-left">长</th><th className="px-2 py-2 text-left">宽</th><th className="px-2 py-2 text-left">高</th><th className="px-2 py-2 text-left">单件重</th><th className="px-2 py-2 text-left">总重</th><th className="px-2 py-2 text-left">单件体积</th><th className="px-2 py-2 text-left">总体积</th><th className="px-2 py-2 text-left">起始箱号</th><th className="px-2 py-2 text-left">结束箱号</th><th className="px-2 py-2 text-left">备注</th></tr></thead>
+                <thead className="bg-slate-50"><tr><th className="px-2 py-2 text-left">入库单号</th><th className="px-2 py-2 text-left">产品名称</th><th className="px-2 py-2 text-left">箱数</th><th className="px-2 py-2 text-left">类型</th><th className="px-2 py-2 text-left">每箱数</th><th className="px-2 py-2 text-left">国内单号</th><th className="px-2 py-2 text-left">SKU</th><th className="px-2 py-2 text-left">箱号</th><th className="px-2 py-2 text-left">长</th><th className="px-2 py-2 text-left">宽</th><th className="px-2 py-2 text-left">高</th><th className="px-2 py-2 text-left">单件重</th><th className="px-2 py-2 text-left">总重</th><th className="px-2 py-2 text-left">单件体积</th><th className="px-2 py-2 text-left">总体积</th><th className="px-2 py-2 text-left">起始箱号</th><th className="px-2 py-2 text-left">结束箱号</th><th className="px-2 py-2 text-left">备注</th></tr></thead>
                 <tbody>
                   {products.map((r) => {
                     const boxes = Number.parseInt(r.boxCount, 10); const safe = Number.isNaN(boxes)||boxes<0?0:boxes;
@@ -320,12 +319,12 @@ export default function StaffForecastInboundPage(): React.ReactNode {
                     const uv=!Number.isNaN(l)&&!Number.isNaN(w)&&!Number.isNaN(h)&&l>0&&w>0&&h>0?(l*w*h)/1_000_000:0;
                     const tv=uv*safe; const tw=(!Number.isNaN(uw)&&uw>0?uw:0)*safe;
                     return <tr key={r.key} className="border-t border-slate-100">
+                      <td className="p-1"><input value={r.inboundTracking} onChange={(e)=>updateRow(r.key,{inboundTracking:e.target.value})} className="w-20 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.productName} onChange={(e)=>updateRow(r.key,{productName:e.target.value})} className="w-28 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.boxCount} onChange={(e)=>updateRow(r.key,{boxCount:e.target.value})} className="w-14 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><select value={r.cargoType} onChange={(e)=>updateRow(r.key,{cargoType:e.target.value as CargoType})} className="w-20 rounded border border-slate-200 px-1 py-1"><option value="GENERAL">普货</option><option value="SENSITIVE">敏感</option><option value="INSPECTION">商检</option></select></td>
                       <td className="p-1"><input value={r.unitsPerBox} onChange={(e)=>updateRow(r.key,{unitsPerBox:e.target.value})} className="w-14 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.domesticTracking} onChange={(e)=>updateRow(r.key,{domesticTracking:e.target.value})} className="w-20 rounded border border-slate-200 px-1 py-1" /></td>
-                      <td className="p-1"><input value={r.inboundTracking} onChange={(e)=>updateRow(r.key,{inboundTracking:e.target.value})} className="w-20 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.sku} onChange={(e)=>updateRow(r.key,{sku:e.target.value})} className="w-16 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.boxNumber} onChange={(e)=>updateRow(r.key,{boxNumber:e.target.value})} className="w-16 rounded border border-slate-200 px-1 py-1" /></td>
                       <td className="p-1"><input value={r.lengthCm} onChange={(e)=>updateRow(r.key,{lengthCm:e.target.value})} className="w-14 rounded border border-slate-200 px-1 py-1" /></td>

@@ -12,7 +12,7 @@ export default function AdminDashboardPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-accent/10">
             <LayoutDashboard className="h-5 w-5 text-brand-accent" />
           </div>
-          <h1 className="text-xl font-semibold text-slate-800">运营看板</h1>
+          <h1 className="text-xl font-semibold text-brand-dark">运营看板</h1>
         </div>
         <p className="mb-6 text-sm leading-relaxed text-slate-600">
           欢迎使用湘泰物流管理后台。请通过左侧菜单进入各模块：订单与运单、渠道报价、关务、海外仓及财务结算等。
@@ -27,7 +27,7 @@ export default function AdminDashboardPage() {
               >
                 新运单录入
               </Link>
-              <span className="text-slate-500">— 仓库录单与自动单号</span>
+              <span className="text-slate-600">— 仓库录单与自动单号</span>
             </li>
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-accent"></span>
@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
               >
                 订单管理
               </Link>
-              <span className="text-slate-500">— 运单列表与费用</span>
+              <span className="text-slate-600">— 运单列表与费用</span>
             </li>
           </ul>
         </div>

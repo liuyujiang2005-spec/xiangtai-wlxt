@@ -393,7 +393,7 @@ export default function CustomerPreOrderListPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#f0f2f5] px-4 py-12 text-center text-sm text-slate-500">
+        <div className="min-h-screen bg-[#f0f2f5] px-4 py-12 text-center text-sm text-slate-600">
           加载中…
         </div>
       }

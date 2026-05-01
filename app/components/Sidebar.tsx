@@ -18,6 +18,7 @@ import {
   Truck,
   Users,
   Warehouse,
+  Search,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -45,27 +46,33 @@ function buildNavItems(role: string | null): NavItem[] {
       { href: "/admin/finance", label: "财务结算与利润", icon: CircleDollarSign },
       { href: "/admin/orders", label: "全局运单审计", icon: Truck },
       { href: "/admin/loading", label: "装柜管理", icon: Package },
+      { href: "/pricing", label: "头程价格", icon: FileText },
       { href: "/admin/channels-pricing", label: "渠道与单价管理", icon: Warehouse },
       { href: "/admin/accounts", label: "员工与客户审计", icon: Users },
       { href: "/admin/customs", label: "关务监控", icon: ShieldCheck },
       { href: "/admin/overseas-integration", label: "海外仓/末端集成", icon: Package },
+      { href: "/tracking", label: "查快递", icon: MapPin },
+      { href: "/ip-check", label: "知识产权查询", icon: Search },
     ];
   }
   if (role === "STAFF") {
     return [
-      { href: "/pricing", label: "头程报价", icon: FileText },
+      { href: "/pricing", label: "头程价格", icon: FileText },
       { href: "/staff", label: "工作台", icon: LayoutDashboard },
       { href: "/staff/direct-inbound", label: "运单管理（入库处理）", icon: ClipboardList },
       { href: "/staff/forecast-inbound", label: "客户预报单查询", icon: PenLine },
       { href: "/staff/container-loading", label: "装柜管理", icon: Package },
+      { href: "/tracking", label: "查快递", icon: MapPin },
+      { href: "/ip-check", label: "知识产权查询", icon: Search },
     ];
   }
   if (role === "CLIENT") {
     return [
-      { href: "/customer/pricing", label: "头程报价", icon: FileText },
+      { href: "/customer/pricing", label: "头程价格", icon: FileText },
       { href: "/customer/pre-order", label: "新建预报", icon: PackagePlus },
       { href: "/customer/shipments", label: "我的运单", icon: Ship },
-      { href: "/customer/tracking", label: "物流轨迹", icon: MapPin },
+      { href: "/tracking", label: "查快递", icon: MapPin },
+      { href: "/ip-check", label: "知识产权查询", icon: Search },
     ];
   }
   return [];
@@ -110,11 +117,16 @@ function isNavActive(pathname: string, href: string): boolean {
       pathname.startsWith("/customer/waybill/")
     );
   }
-  if (href === "/customer/tracking") {
+  if (href === "/tracking") {
     return (
+      pathname === "/tracking" ||
+      pathname.startsWith("/tracking/") ||
       pathname === "/customer/tracking" ||
       pathname.startsWith("/customer/tracking/")
     );
+  }
+  if (href === "/ip-check") {
+    return pathname === "/ip-check";
   }
   if (href === "/staff/direct-inbound") {
     return pathname === "/staff/direct-inbound";
@@ -270,12 +282,12 @@ export function Sidebar() {
     <aside className="no-print flex min-h-[calc(100vh-57px)] w-[13.5rem] shrink-0 flex-col border-r border-slate-200 bg-white sm:w-56">
       <div className="border-b border-slate-100 px-3 py-3">
         <p className="text-xs font-semibold tracking-wide text-brand">湘泰物流</p>
-        <p className="mt-2 text-xs text-slate-500">当前身份</p>
-        <p className="mt-0.5 text-sm font-medium text-slate-800">
+        <p className="mt-2 text-xs text-slate-600">当前身份</p>
+        <p className="mt-0.5 text-sm font-medium text-brand-dark">
           {roleLabel(role)}
         </p>
         {username ? (
-          <p className="mt-1 truncate text-xs text-slate-500">
+          <p className="mt-1 truncate text-xs text-slate-600">
             {role === "CLIENT" && realName?.trim()
               ? `${realName.trim()}（${username}）`
               : username}
@@ -284,7 +296,7 @@ export function Sidebar() {
         {role === "CLIENT" && username ? (
           <p className="mt-1.5 text-xs leading-snug text-slate-600">
             我的唛头：
-            <span className="font-mono font-semibold text-slate-800">
+            <span className="font-mono font-semibold text-brand-dark">
               {username}
             </span>
           </p>

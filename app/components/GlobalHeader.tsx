@@ -17,7 +17,7 @@ export function GlobalHeader() {
         <p className="text-base font-semibold tracking-wide text-brand">湘泰物流</p>
         <div className="flex flex-1 items-center justify-end gap-6 sm:gap-8">
           <div className="hidden text-right sm:block">
-            <p className="text-xs text-slate-500">结算币种</p>
+            <p className="text-xs text-slate-600">结算币种</p>
             <p className="text-sm font-medium text-slate-700">人民币（CNY）</p>
           </div>
           <AuthBar />

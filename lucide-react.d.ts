@@ -46,4 +46,7 @@ declare module "lucide-react" {
   export const UserPlus: LucideIcon;
   export const Users: LucideIcon;
   export const Warehouse: LucideIcon;
+  export const FileWarning: LucideIcon;
+  export const HelpCircle: LucideIcon;
+  export const Clock: LucideIcon;
 }

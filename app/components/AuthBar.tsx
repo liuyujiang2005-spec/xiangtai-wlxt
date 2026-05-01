@@ -108,11 +108,11 @@ export function AuthBar() {
           {displayName}
         </span>
         {user.role === "CLIENT" && user.realName?.trim() ? (
-          <span className="max-w-[80px] truncate text-xs text-slate-400">
+          <span className="max-w-[80px] truncate text-xs text-slate-500">
             ({user.username})
           </span>
         ) : null}
-        <span className="text-slate-400">·</span>
+        <span className="text-slate-500">·</span>
         <span>{roleLabel}</span>
       </div>
       <button

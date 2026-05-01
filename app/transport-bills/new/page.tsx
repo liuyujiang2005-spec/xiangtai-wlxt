@@ -150,7 +150,7 @@ export default function NewTransportBillPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col bg-white px-4 py-6 text-slate-900 sm:px-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col bg-white px-4 py-6 text-brand-dark sm:px-6">
       <header className="mb-5 rounded-2xl border border-slate-200 p-4">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-brand/10 p-2">
@@ -158,7 +158,7 @@ export default function NewTransportBillPage() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-brand">新运单录入</h1>
-            <p className="text-sm text-slate-500">湘泰物流 · 快速录单</p>
+            <p className="text-sm text-slate-600">湘泰物流 · 快速录单</p>
           </div>
         </div>
       </header>
@@ -176,7 +176,7 @@ export default function NewTransportBillPage() {
               已按低消标准 {MIN_CBM[shippingMethod]} CBM 计费（海运 0.5 / 陆运 0.3）
             </p>
           ) : (
-            <p className="mt-1 text-xs text-slate-500">按实际体积计费，未触发低消</p>
+            <p className="mt-1 text-xs text-slate-600">按实际体积计费，未触发低消</p>
           )}
         </section>
       ) : null}
@@ -305,7 +305,7 @@ export default function NewTransportBillPage() {
             低消补差费：
             <CurrencyAmount value={result.charge.minChargeDifferenceFee} />
           </p>
-          <p className="mt-1 flex flex-wrap items-center gap-1 text-sm text-slate-800">
+          <p className="mt-1 flex flex-wrap items-center gap-1 text-sm text-brand-dark">
             最终总费：
             <CurrencyAmount value={result.charge.finalCharge} className="text-brand" />
           </p>

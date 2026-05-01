@@ -21,7 +21,7 @@ export function CurrencyAmount({
   const text = value.toFixed(fractionDigits);
   return (
     <span
-      className={`inline-flex items-baseline gap-0 font-mono font-bold tabular-nums text-slate-900 ${className}`}
+      className={`inline-flex items-baseline gap-0 font-mono font-bold tabular-nums text-brand-dark ${className}`}
     >
       {showSymbol ? <span>¥</span> : null}
       <span>{text}</span>

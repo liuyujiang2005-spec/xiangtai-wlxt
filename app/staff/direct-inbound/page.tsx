@@ -293,53 +293,53 @@ export default function StaffDirectInboundPage(): React.ReactNode {
           <label className="text-sm">
             <span className="mb-1 block text-slate-600">运输方式</span>
             <select value={shippingMethod} onChange={(e) => setShippingMethod(e.target.value as ShippingMethod)} className="w-full rounded border border-slate-200 px-2 py-2">
-              <option value="SEA">海运（低消 0.5）</option>
-              <option value="LAND">陆运（低消 0.3）</option>
+              <option value="SEA">海运</option>
+              <option value="LAND">陆运</option>
             </select>
           </label>
           <label className="text-sm">
             <span className="mb-1 block text-slate-600">单价（¥ / CBM）</span>
             <input value={unitPrice} readOnly className="w-full rounded border border-slate-200 bg-slate-50 px-2 py-2" />
-            <span className="mt-1 block text-[11px] text-slate-500">
-              {priceLoading ? "读取中..." : "自动读取管理员单价（含客户专属价）"}
+            <span className="mt-1 block text-[11px] text-slate-600">
+              {priceLoading ? "读取中..." : "自动读取单价"}
             </span>
           </label>
-          <label className="flex items-center gap-2 pt-6 text-sm">
-            <input type="checkbox" checked={isMinChargeWaived} onChange={(e) => setIsMinChargeWaived(e.target.checked)} />
-            豁免低消
-          </label>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <label className="text-sm">
-            <span className="mb-1 block text-slate-600">所属客户（可搜索）</span>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="relative text-sm sm:col-span-2">
+            <span className="mb-1 block text-slate-600">所属客户搜索</span>
             <input
               value={customerQuery}
-              onChange={(e) => setCustomerQuery(e.target.value)}
-              placeholder="输入登录名/姓名搜索"
+              onChange={(e) => {
+                setCustomerQuery(e.target.value);
+                setClientUserId("");
+                setShippingMark("");
+              }}
+              placeholder="输入客户名或姓名，然后在下方列表中点击选择"
               className="w-full rounded border border-slate-200 px-2 py-2"
             />
-          </label>
-          <label className="text-sm sm:col-span-2">
-            <span className="mb-1 block text-slate-600">客户选择</span>
-            <select
-              value={clientUserId}
-              onChange={(e) => {
-                const id = e.target.value;
-                setClientUserId(id);
-                const picked = customers.find((c) => c.id === id);
-                setShippingMark(picked?.username ?? "");
-              }}
-              className="w-full rounded border border-slate-200 px-2 py-2"
-            >
-              <option value="">请选择客户</option>
-              {filteredCustomers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.username}
-                  {c.realName ? `（${c.realName}）` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+            {customerQuery && !clientUserId && (
+              <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border border-slate-200 bg-white shadow-lg">
+                {filteredCustomers.length > 0 ? (
+                  filteredCustomers.map((c) => (
+                    <li
+                      key={c.id}
+                      onClick={() => {
+                        setClientUserId(c.id);
+                        setShippingMark(c.username);
+                        setCustomerQuery(`${c.username} ${c.realName ? `(${c.realName})` : ""}`);
+                      }}
+                      className="cursor-pointer px-3 py-2 hover:bg-slate-100"
+                    >
+                      {c.username} {c.realName ? `（${c.realName}）` : ""}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-3 py-2 text-slate-500">无匹配客户</li>
+                )}
+              </ul>
+            )}
+          </div>
         </div>
         <label className="block text-sm">
           <span className="mb-1 block text-slate-600">唛头（自动关联客户登录名）</span>
@@ -350,8 +350,8 @@ export default function StaffDirectInboundPage(): React.ReactNode {
           <table className="min-w-[1500px] w-full text-xs">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="px-2 py-2 text-left">产品名称</th><th className="px-2 py-2 text-left">箱数</th><th className="px-2 py-2 text-left">产品类型</th><th className="px-2 py-2 text-left">每箱产品数</th>
-                <th className="px-2 py-2 text-left">国内单号</th><th className="px-2 py-2 text-left">入库单号</th><th className="px-2 py-2 text-left">SKU</th><th className="px-2 py-2 text-left">箱号</th>
+                <th className="px-2 py-2 text-left">入库单号</th><th className="px-2 py-2 text-left">产品名称</th><th className="px-2 py-2 text-left">箱数</th><th className="px-2 py-2 text-left">产品类型</th><th className="px-2 py-2 text-left">每箱产品数</th>
+                <th className="px-2 py-2 text-left">国内单号</th><th className="px-2 py-2 text-left">SKU</th><th className="px-2 py-2 text-left">箱号</th>
                 <th className="px-2 py-2 text-left">长</th><th className="px-2 py-2 text-left">宽</th><th className="px-2 py-2 text-left">高</th><th className="px-2 py-2 text-left">单件重</th>
                 <th className="px-2 py-2 text-left">总重</th><th className="px-2 py-2 text-left">单件体积</th><th className="px-2 py-2 text-left">总体积</th>
                 <th className="px-2 py-2 text-left">起始箱号</th><th className="px-2 py-2 text-left">结束箱号</th><th className="px-2 py-2 text-left">备注</th><th className="px-2 py-2 text-left">操作</th>
@@ -368,12 +368,12 @@ export default function StaffDirectInboundPage(): React.ReactNode {
                 const totalWeight = (!Number.isNaN(uw) && uw > 0 ? uw : 0) * safeBoxes;
                 return (
                   <tr key={r.key} className="border-t border-slate-100">
+                    <td className="p-1"><input value={r.inboundTracking} onChange={(e)=>updateRow(r.key,{inboundTracking:e.target.value})} className="w-24 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.productName} onChange={(e)=>updateRow(r.key,{productName:e.target.value})} className="w-28 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.boxCount} onChange={(e)=>updateRow(r.key,{boxCount:e.target.value})} className="w-14 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><select value={r.cargoType} onChange={(e)=>updateRow(r.key,{cargoType:e.target.value as CargoType})} className="w-20 rounded border border-slate-200 px-1 py-1"><option value="GENERAL">普货</option><option value="SENSITIVE">敏感</option><option value="INSPECTION">商检</option></select></td>
                     <td className="p-1"><input value={r.unitsPerBox} onChange={(e)=>updateRow(r.key,{unitsPerBox:e.target.value})} className="w-16 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.domesticTracking} onChange={(e)=>updateRow(r.key,{domesticTracking:e.target.value})} className="w-24 rounded border border-slate-200 px-1 py-1" /></td>
-                    <td className="p-1"><input value={r.inboundTracking} onChange={(e)=>updateRow(r.key,{inboundTracking:e.target.value})} className="w-24 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.sku} onChange={(e)=>updateRow(r.key,{sku:e.target.value})} className="w-16 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.boxNumber} onChange={(e)=>updateRow(r.key,{boxNumber:e.target.value})} className="w-16 rounded border border-slate-200 px-1 py-1" /></td>
                     <td className="p-1"><input value={r.lengthCm} onChange={(e)=>updateRow(r.key,{lengthCm:e.target.value})} className="w-14 rounded border border-slate-200 px-1 py-1" /></td>
@@ -401,8 +401,8 @@ export default function StaffDirectInboundPage(): React.ReactNode {
 
         {chargePreview ? (
           <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
-            <p className="text-slate-500">预估运费</p>
-            <p className="mt-1 text-base font-semibold text-slate-900">
+            <p className="text-slate-600">预估运费</p>
+            <p className="mt-1 text-base font-semibold text-brand-dark">
               <CurrencyAmount value={chargePreview.finalCharge} />
             </p>
           </div>

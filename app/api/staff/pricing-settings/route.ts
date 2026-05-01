@@ -7,8 +7,8 @@ import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   const { searchParams } = new URL(request.url);
   const clientUserId = (searchParams.get("clientUserId") ?? "").trim();

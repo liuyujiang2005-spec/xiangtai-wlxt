@@ -24,8 +24,8 @@ function parsePagination(request: Request): { page: number; pageSize: number } {
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireClient();
-    if (auth instanceof NextResponse) {
-      return auth;
+    if (auth instanceof Response || (auth && 'status' in auth)) {
+      return auth as NextResponse;
     }
 
     const { page, pageSize } = parsePagination(request);

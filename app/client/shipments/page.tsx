@@ -84,7 +84,7 @@ export default function ClientShipmentsPage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-slate-500">加载中…</p>
+        <p className="text-sm text-slate-600">加载中…</p>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <div className="overflow-x-auto">
@@ -113,7 +113,7 @@ export default function ClientShipmentsPage() {
                     </td>
                     <td className="px-3 py-3">
                       {row.isForecastPending ? (
-                        <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-800">
+                        <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-brand-dark">
                           已预报，待入库
                         </span>
                       ) : (
@@ -144,7 +144,7 @@ export default function ClientShipmentsPage() {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-3 py-8 text-center text-slate-400"
+                      className="px-3 py-8 text-center text-slate-500"
                     >
                       暂无运单数据
                     </td>

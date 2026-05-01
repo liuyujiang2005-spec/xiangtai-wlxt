@@ -114,7 +114,7 @@ export default function WaybillPrintPage(): React.ReactNode {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-sm text-slate-500">
+      <div className="flex min-h-[50vh] items-center justify-center text-sm text-slate-600">
         加载中…
       </div>
     );
@@ -151,7 +151,7 @@ export default function WaybillPrintPage(): React.ReactNode {
       `}</style>
       <div className="min-h-screen bg-slate-100 py-6 print:bg-white print:py-0">
         <div className="no-print mx-auto mb-4 flex max-w-3xl flex-col items-end gap-1 px-4 sm:flex-row sm:items-center sm:justify-end">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600">
             共 {printSpec.sheetCount} 张面单
             {printSpec.missingTotal
               ? "（未填写总件数，已按 1 张打印；补全件数后可分页箱号）"
@@ -173,10 +173,10 @@ export default function WaybillPrintPage(): React.ReactNode {
             className="waybill-print-page waybill-sheet mx-auto mb-8 max-w-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm print:mx-0 print:mb-0 print:max-w-none print:border-0 print:px-8 print:py-10"
           >
             <header className="border-b border-slate-200 pb-4 text-center">
-              <p className="text-sm font-semibold tracking-wide text-slate-800">
+              <p className="text-sm font-semibold tracking-wide text-brand-dark">
                 湘泰物流 · 入库面单
               </p>
-              <p className="mt-1 font-mono text-xs text-slate-500">
+              <p className="mt-1 font-mono text-xs text-slate-600">
                 {bill.trackingNumber}
               </p>
             </header>
@@ -186,7 +186,7 @@ export default function WaybillPrintPage(): React.ReactNode {
                 箱号 CARTON
               </p>
               <p
-                className="mt-2 text-center font-mono font-black tabular-nums leading-none tracking-tight text-slate-900"
+                className="mt-2 text-center font-mono font-black tabular-nums leading-none tracking-tight text-brand-dark"
                 style={{
                   fontSize: "clamp(3rem, 14vw, 5.5rem)",
                   lineHeight: 1.05,
@@ -194,53 +194,53 @@ export default function WaybillPrintPage(): React.ReactNode {
               >
                 {`${printSpec.boxTotal}-${boxIndex}`}
               </p>
-              <p className="mt-2 font-mono text-sm text-slate-500">
+              <p className="mt-2 font-mono text-sm text-slate-600">
                 第 {boxIndex} 箱 / 共 {printSpec.boxTotal} 箱
                 {printSpec.missingTotal ? "（订单未填总件数，暂按 1 箱）" : ""}
               </p>
             </section>
 
             <section className="mt-8 flex flex-col items-center justify-center border-y-2 border-slate-900 py-10 print:border-black print:py-12">
-              <p className="text-xs font-medium uppercase tracking-widest text-slate-500 print:text-slate-600">
+              <p className="text-xs font-medium uppercase tracking-widest text-slate-600 print:text-slate-600">
                 唛头 MARK
               </p>
               <p
-                className="mt-3 text-center font-mono text-5xl font-black leading-none tracking-tight text-slate-900 print:text-6xl print:font-black"
+                className="mt-3 text-center font-mono text-5xl font-black leading-none tracking-tight text-brand-dark print:text-6xl print:font-black"
                 style={{ fontSize: "clamp(2rem, 8vw, 3.75rem)" }}
               >
                 {markDisplay || "—"}
               </p>
             </section>
 
-            <dl className="mt-8 grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-slate-800">
+            <dl className="mt-8 grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-brand-dark">
               <div>
-                <dt className="text-xs text-slate-500">仓库</dt>
+                <dt className="text-xs text-slate-600">仓库</dt>
                 <dd className="mt-0.5 font-medium">
                   {WAREHOUSE_LABEL[bill.warehouse] ?? bill.warehouse}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-500">运输方式</dt>
+                <dt className="text-xs text-slate-600">运输方式</dt>
                 <dd className="mt-0.5 font-medium">
                   {SHIPPING_LABEL[bill.shippingMethod] ?? bill.shippingMethod}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-500">目的国家</dt>
+                <dt className="text-xs text-slate-600">目的国家</dt>
                 <dd className="mt-0.5 font-medium">{bill.destinationCountry}</dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-500">总件数</dt>
+                <dt className="text-xs text-slate-600">总件数</dt>
                 <dd className="mt-0.5 font-medium tabular-nums">
                   {bill.totalPackages ?? "—"}
                 </dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-xs text-slate-500">备注</dt>
+                <dt className="text-xs text-slate-600">备注</dt>
                 <dd className="mt-0.5">{bill.remark?.trim() || "—"}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-xs text-slate-500">预报时间</dt>
+                <dt className="text-xs text-slate-600">预报时间</dt>
                 <dd className="mt-0.5 font-mono text-xs text-slate-600">
                   {new Date(bill.createdAt).toLocaleString("zh-CN", {
                     hour12: false,

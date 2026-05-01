@@ -354,7 +354,7 @@ function CustomerPreOrderNewForm() {
       >
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-800">基本信息（左）</h2>
+            <h2 className="text-sm font-semibold text-brand-dark">基本信息（左）</h2>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">
                 运输方式
@@ -364,7 +364,7 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setShippingMethod(e.target.value as ShippingMethod);
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               >
                 {SHIPPING_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -383,7 +383,7 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setDepartureDate(e.target.value);
                 }}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               />
             </label>
             <label className="block">
@@ -395,7 +395,7 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setPreOrderStatus(e.target.value as PreOrderStatus);
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               >
                 {STATUS_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -417,13 +417,13 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setDeclaredTotalWeight(e.target.value);
                 }}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               />
             </label>
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-800">目的地与汇总（右）</h2>
+            <h2 className="text-sm font-semibold text-brand-dark">目的地与汇总（右）</h2>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">
                 备注
@@ -435,7 +435,7 @@ function CustomerPreOrderNewForm() {
                 }}
                 rows={3}
                 placeholder="选填"
-                className="w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand placeholder:text-slate-400 focus:ring-2"
+                className="w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand placeholder:text-slate-500 focus:ring-2"
               />
             </label>
             <label className="block">
@@ -460,7 +460,7 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setWarehouse(e.target.value as Warehouse);
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               >
                 {WAREHOUSE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -482,7 +482,7 @@ function CustomerPreOrderNewForm() {
                 onChange={(e) => {
                   setDestinationCountry(e.target.value);
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-brand focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
               >
                 {COUNTRY_OPTIONS.map((c) => (
                   <option key={c} value={c}>
@@ -495,10 +495,10 @@ function CustomerPreOrderNewForm() {
               <span className="mb-1 block text-xs font-medium text-slate-600">
                 总件数（自动）
               </span>
-              <p className="font-mono text-sm font-semibold text-slate-900">
+              <p className="font-mono text-sm font-semibold text-brand-dark">
                 {computedTotalPieces}
               </p>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-slate-600">
                 由各行「箱数 × 每箱产品数」汇总
               </p>
             </div>
@@ -506,7 +506,7 @@ function CustomerPreOrderNewForm() {
               <span className="mb-1 block text-xs font-medium text-slate-700">
                 预估总体积（自动，CBM）
               </span>
-              <p className="font-mono text-sm font-semibold text-slate-900">
+              <p className="font-mono text-sm font-semibold text-brand-dark">
                 {computedVolumeCbm.toFixed(4)}
               </p>
               <p className="mt-1 text-[11px] text-slate-600">
@@ -518,13 +518,13 @@ function CustomerPreOrderNewForm() {
 
         <div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-slate-800">
+            <h2 className="text-sm font-semibold text-brand-dark">
               预录单产品
             </h2>
             <button
               type="button"
               onClick={addProductRow}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-brand-dark hover:bg-slate-50"
             >
               <Plus className="h-4 w-4" />
               新增
@@ -576,7 +576,7 @@ function CustomerPreOrderNewForm() {
               <tbody>
                 {products.map((row, index) => (
                   <tr key={row.key} className="border-b border-slate-100">
-                    <td className="sticky left-0 bg-white px-2 py-1.5 text-slate-500">
+                    <td className="sticky left-0 bg-white px-2 py-1.5 text-slate-600">
                       {index + 1}
                     </td>
                     <td className="px-1 py-1">
@@ -701,7 +701,7 @@ function CustomerPreOrderNewForm() {
                         onClick={() => {
                           removeProductRow(row.key);
                         }}
-                        className="inline-flex rounded p-1 text-slate-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+                        className="inline-flex rounded p-1 text-slate-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
                         aria-label="删除行"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -738,7 +738,7 @@ export default function CustomerPreOrderNewPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-[92rem] px-4 py-16 text-center text-sm text-slate-500">
+        <div className="mx-auto max-w-[92rem] px-4 py-16 text-center text-sm text-slate-600">
           加载表单…
         </div>
       }

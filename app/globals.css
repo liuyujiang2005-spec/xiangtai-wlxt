@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --color-brand: #1e3a8a;
   --color-brand-accent: #FF8C00;
+  --color-brand-dark: #1A2B50;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -26,3 +27,87 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 确保所有输入框的占位符不浅于 #999999 */
+::placeholder {
+  color: #999999 !important;
+  opacity: 1 !important;
+}
+
+/* ==========================================================================
+   全局 UI 强制重构：对比度提升与色彩规范
+   ========================================================================== */
+
+/* 1. 强制提升正文对比度：全站禁止使用色值浅于 #777777 的文字 */
+/* 将常见的浅灰色文本强制加深 */
+.text-slate-400, .text-gray-400 { color: #666666 !important; }
+.text-slate-500, .text-gray-500 { color: #444444 !important; }
+.text-slate-600, .text-gray-600 { color: #222222 !important; }
+.text-slate-700, .text-gray-700 { color: #111111 !important; }
+.text-slate-800, .text-gray-800 { color: #000000 !important; }
+
+/* 2. 表单与按钮加深：所有输入框、下拉框、按钮的文字强制变深 */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+button,
+[role="button"],
+.btn {
+  color: #111111;
+  font-weight: 600;
+}
+
+/* 确保按钮带有的特定颜色类不被覆盖 */
+button.text-brand { color: #1e3a8a !important; }
+button.text-brand-accent { color: #FF8C00 !important; }
+button.text-white { color: #ffffff !important; }
+button.text-amber-700 { color: #92400e !important; }
+button.text-sky-700 { color: #0369a1 !important; }
+button.text-emerald-700 { color: #047857 !important; }
+button.text-red-600 { color: #dc2626 !important; }
+
+/* 彻底解决禁用状态(Disabled)文字看不清的问题 */
+:disabled, 
+[disabled] {
+  opacity: 1 !important; /* 取消一切变淡的透明度 */
+  color: #555555 !important; /* 禁用状态的文字至少保持深灰 */
+  background-color: #e2e8f0 !important; /* 给禁用按钮一个清晰的淡灰底色 */
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed !important;
+  font-weight: 600 !important;
+}
+
+/* 主按钮禁用时的特殊处理，防止白字变黑 */
+.bg-brand:disabled, 
+.bg-brand-accent:disabled {
+  color: #ffffff !important;
+  background-color: #94a3b8 !important;
+}
+
+/* 3. 表头强化：表格表头必须加粗，且文字颜色设为纯黑 */
+th, 
+thead th,
+.table-header,
+[role="columnheader"] {
+  font-weight: 800 !important;
+  color: #000000 !important;
+}
+
+/* 4. 侧边栏与深色背景优化：深色背景下的文字亮度提升 20%，确保导航清晰 */
+.bg-brand .text-slate-400, .bg-slate-900 .text-slate-400,
+.bg-brand .text-slate-500, .bg-slate-900 .text-slate-500,
+.bg-brand .text-slate-600, .bg-slate-900 .text-slate-600,
+.bg-brand .text-gray-400, .bg-slate-900 .text-gray-400,
+.bg-brand .text-gray-500, .bg-slate-900 .text-gray-500 {
+  color: #f8fafc !important; 
+}
+.bg-brand .text-slate-300, .bg-slate-900 .text-slate-300,
+.bg-brand .text-gray-300, .bg-slate-900 .text-gray-300 {
+  color: #ffffff !important; 
+}
+
+/* 全局兜底：所有带文本的元素基础字体加粗一档 */
+body {
+  font-weight: 500;
+}
+

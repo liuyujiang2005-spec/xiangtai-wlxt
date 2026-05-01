@@ -5,7 +5,7 @@ import { CurrencyAmount } from "@/app/components/CurrencyAmount";
  */
 export default function PricingReferencePage() {
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 text-slate-800 sm:px-6">
+    <main className="mx-auto max-w-4xl px-4 py-8 text-brand-dark sm:px-6">
       <header className="mb-8 border-b border-slate-200 pb-6">
         <h1 className="text-xl font-semibold text-brand sm:text-2xl">
           广州湘泰国际物流有限公司
@@ -13,13 +13,13 @@ export default function PricingReferencePage() {
         <p className="mt-2 text-sm text-slate-600">
           联系人：湘泰 · 报价单主题：头程陆运 / 海运费用（中国 → 泰国曼谷）
         </p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-slate-600">
           以下价格单位为人民币（RMB），按体积为「元/方（CBM）」；具体以业务确认为准。
         </p>
       </header>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">一、陆运（目的地：泰国曼谷）</h2>
+        <h2 className="mb-3 text-lg font-semibold text-brand-dark">一、陆运（目的地：泰国曼谷）</h2>
         <p className="mb-4 text-sm text-slate-600">
           装柜后时效约 <strong>5–7 天</strong>（以实际排期为准）。适用仓库：深圳 / 义乌 / 广州等。
         </p>
@@ -73,7 +73,7 @@ export default function PricingReferencePage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">二、海运（目的地：泰国曼谷）</h2>
+        <h2 className="mb-3 text-lg font-semibold text-brand-dark">二、海运（目的地：泰国曼谷）</h2>
         <p className="mb-4 text-sm text-slate-600">
           开船后时效约 <strong>12–15 天</strong>（以船期为准）。适用仓库：深圳 / 义乌 / 广州等。
         </p>
@@ -119,7 +119,7 @@ export default function PricingReferencePage() {
         </div>
       </section>
 
-      <section className="mb-8 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-slate-800">
+      <section className="mb-8 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-brand-dark">
         <h3 className="mb-2 font-semibold text-red-900">三、计费与低消（与系统录单规则对齐）</h3>
         <ul className="list-inside list-disc space-y-1">
           <li>
@@ -134,7 +134,7 @@ export default function PricingReferencePage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">四、条款摘要</h2>
+        <h2 className="mb-3 text-lg font-semibold text-brand-dark">四、条款摘要</h2>
         <ol className="list-inside list-decimal space-y-2 text-sm text-slate-700">
           <li>
             报价为人民币含税参考价，含泰国关税及曼谷市内派送；曼谷以外地区另计泰国国内物流费用。
@@ -157,7 +157,7 @@ export default function PricingReferencePage() {
         </ol>
       </section>
 
-      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-xs text-slate-500">
+      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-xs text-slate-600">
         <p>
           如需在页面内嵌原报价单扫描图，可将图片保存为{" "}
           <code className="rounded bg-slate-200 px-1">public/pricing-quote.png</code>{" "}

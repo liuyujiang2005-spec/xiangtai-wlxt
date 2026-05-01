@@ -234,8 +234,8 @@ function parsePagination(request: Request): { page: number; pageSize: number } {
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireStaffOrAdmin();
-    if (auth instanceof NextResponse) {
-      return auth;
+    if (auth instanceof Response || (auth && 'status' in auth)) {
+      return auth as NextResponse;
     }
 
     const searchTerm = parseSearchTerm(request);
@@ -317,8 +317,8 @@ export async function GET(request: Request): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const auth = await requireStaffOrAdmin();
-  if (auth instanceof NextResponse) {
-    return auth;
+  if (auth instanceof Response || (auth && 'status' in auth)) {
+    return auth as NextResponse;
   }
 
   try {

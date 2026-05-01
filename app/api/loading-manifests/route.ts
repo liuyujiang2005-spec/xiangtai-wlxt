@@ -55,8 +55,8 @@ async function issueManifestNo(tx: any, now: Date): Promise<string> {
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && 'status' in gate)) {
+    return gate as NextResponse;
   }
   try {
     const { searchParams } = new URL(request.url);
@@ -113,8 +113,8 @@ export async function GET(request: Request): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && 'status' in gate)) {
+    return gate as NextResponse;
   }
   try {
     const body = CreateBodySchema.parse(await request.json());

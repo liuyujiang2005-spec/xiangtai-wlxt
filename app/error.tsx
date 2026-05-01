@@ -26,7 +26,7 @@ export default function GlobalError({
         <AlertCircle className="h-10 w-10 text-red-600" />
       </div>
 
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+      <h1 className="text-2xl font-bold tracking-tight text-brand-dark sm:text-3xl">
         抱歉，系统遇到了错误
       </h1>
       
@@ -35,7 +35,7 @@ export default function GlobalError({
       </p>
 
       {error.digest && (
-        <p className="mt-2 text-xs font-mono text-slate-400">
+        <p className="mt-2 text-xs font-mono text-slate-500">
           错误代码: {error.digest}
         </p>
       )}

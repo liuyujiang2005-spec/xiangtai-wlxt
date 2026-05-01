@@ -70,7 +70,7 @@ function PasswordFieldRow({
         />
         <button
           type="button"
-          className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+          className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-brand-dark"
           onClick={onToggleShow}
           aria-label={show ? "隐藏密码" : "显示密码"}
         >
@@ -353,7 +353,7 @@ export default function AdminAccountsPage() {
       <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
           <UserPlus className="h-5 w-5 text-brand" />
-          <h2 className="text-base font-semibold text-slate-900">创建账号</h2>
+          <h2 className="text-base font-semibold text-brand-dark">创建账号</h2>
         </div>
         <p className="mb-4 text-sm text-slate-600">
           可新建<strong>仓库员工</strong>或<strong>客户</strong>登录账号。管理员账号请通过系统初始化或数据库维护，不在此创建。
@@ -434,17 +434,17 @@ export default function AdminAccountsPage() {
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">
+        <h2 className="mb-4 text-base font-semibold text-brand-dark">
           全部账号
         </h2>
-        <p className="mb-4 text-sm text-slate-500">
+        <p className="mb-4 text-sm text-slate-600">
           下列为系统中全部仓库员工与客户登录账号（不含管理员）。
         </p>
         <div className="mb-4">
           <label className="block text-sm">
             <span className="mb-1 block text-slate-600">搜索账号</span>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
               <input
                 type="search"
                 className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm outline-none ring-brand/20 focus:ring"
@@ -457,11 +457,11 @@ export default function AdminAccountsPage() {
           </label>
         </div>
         {loadingList ? (
-          <p className="text-sm text-slate-500">加载中…</p>
+          <p className="text-sm text-slate-600">加载中…</p>
         ) : list.length === 0 ? (
-          <p className="text-sm text-slate-500">暂无账号，请在上方创建。</p>
+          <p className="text-sm text-slate-600">暂无账号，请在上方创建。</p>
         ) : filteredList.length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-600">
             无匹配账号，请调整搜索关键字。
           </p>
         ) : (
@@ -481,7 +481,7 @@ export default function AdminAccountsPage() {
               <tbody>
                 {filteredList.map((row) => (
                   <tr key={row.id} className="border-b border-slate-100">
-                    <td className="py-2 pr-3 font-medium text-slate-900">
+                    <td className="py-2 pr-3 font-medium text-brand-dark">
                       {row.username}
                     </td>
                     <td className="py-2 pr-3">{roleLabel(row.role)}</td>
@@ -549,7 +549,7 @@ export default function AdminAccountsPage() {
                           />
                         </div>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-slate-500">—</span>
                       )}
                     </td>
                     <td className="py-2 pr-3">
@@ -624,7 +624,7 @@ export default function AdminAccountsPage() {
         )}
       </section>
 
-      <p className="mt-6 text-xs text-slate-500">
+      <p className="mt-6 text-xs text-slate-600">
         客户合同、结算方式等档案类功能可在后续「客户档案」模块扩展；当前登录账号统一在本页维护。
       </p>
 
@@ -638,7 +638,7 @@ export default function AdminAccountsPage() {
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
             <h3
               id="pwd-dialog-title"
-              className="mb-1 text-base font-semibold text-slate-900"
+              className="mb-1 text-base font-semibold text-brand-dark"
             >
               修改密码
             </h3>

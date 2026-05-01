@@ -12,8 +12,8 @@ export async function GET(): Promise<NextResponse> {
 
   try {
     const auth = await requireAdmin();
-    if (auth instanceof NextResponse) {
-      return auth;
+    if (auth instanceof Response || (auth && typeof auth === 'object' && 'status' in auth)) {
+      return auth as any;
     }
 
     // Test 1: Prisma connection

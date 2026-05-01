@@ -79,8 +79,8 @@ function pickPrimaryDomestic(products: IncomingProduct[]): string {
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireClient();
-    if (auth instanceof NextResponse) {
-      return auth;
+    if (auth instanceof Response || (auth && 'status' in auth)) {
+      return auth as NextResponse;
     }
 
     let bodyData: unknown;

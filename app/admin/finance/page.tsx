@@ -402,7 +402,7 @@ export default function AdminFinancePage() {
         <>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-500">本月预计总营收（含低消补差）</p>
+            <p className="text-sm text-slate-600">本月预计总营收（含低消补差）</p>
             <p className="mt-1 text-brand">
               <CurrencyAmount
                 value={cardMetrics.projectedRevenue}
@@ -411,7 +411,7 @@ export default function AdminFinancePage() {
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-500">已豁免金额汇总</p>
+            <p className="text-sm text-slate-600">已豁免金额汇总</p>
             <p className="mt-1 text-brand">
               <CurrencyAmount
                 value={cardMetrics.waivedAmount}
@@ -420,7 +420,7 @@ export default function AdminFinancePage() {
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-500">实际应收总额（¥）</p>
+            <p className="text-sm text-slate-600">实际应收总额（¥）</p>
             <p className="mt-1 text-brand">
               <CurrencyAmount
                 value={cardMetrics.actualReceivable}
@@ -612,7 +612,7 @@ export default function AdminFinancePage() {
                 ))}
                 {pagination.pageRows.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-3 py-8 text-center text-slate-400">暂无 XT 正式单</td>
+                    <td colSpan={10} className="px-3 py-8 text-center text-slate-500">暂无 XT 正式单</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -667,7 +667,7 @@ export default function AdminFinancePage() {
         </section>
         </>
       ) : !error ? (
-        <p className="text-sm text-slate-500">加载中…</p>
+        <p className="text-sm text-slate-600">加载中…</p>
       ) : null}
     </main>
   );

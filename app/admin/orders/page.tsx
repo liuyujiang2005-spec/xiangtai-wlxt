@@ -301,8 +301,8 @@ export default function AdminOrdersPage(): React.ReactNode {
               : "border-slate-200 bg-white"
           }`}
         >
-          <p className="text-xs text-slate-500">全部运单</p>
-          <p className="mt-1 text-xl font-semibold text-slate-900">{rows.length}</p>
+          <p className="text-xs text-slate-600">全部运单</p>
+          <p className="mt-1 text-xl font-semibold text-brand-dark">{rows.length}</p>
         </button>
         {STATUS_OPTIONS.map((o) => (
           <button
@@ -318,8 +318,8 @@ export default function AdminOrdersPage(): React.ReactNode {
                 : "border-slate-200 bg-white"
             }`}
           >
-            <p className="text-xs text-slate-500">{o.label}</p>
-            <p className="mt-1 text-xl font-semibold text-slate-900">
+            <p className="text-xs text-slate-600">{o.label}</p>
+            <p className="mt-1 text-xl font-semibold text-brand-dark">
               {statusStats.byStatus[o.value]}
             </p>
           </button>
@@ -485,7 +485,7 @@ export default function AdminOrdersPage(): React.ReactNode {
             ))}
             {filteredRows.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-3 py-8 text-center text-slate-400">
+                <td colSpan={9} className="px-3 py-8 text-center text-slate-500">
                   暂无正式运单
                 </td>
               </tr>
@@ -498,7 +498,7 @@ export default function AdminOrdersPage(): React.ReactNode {
         <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 sm:px-6">
           <p className="text-sm text-slate-700">
             第 <span className="font-medium">{pagination.page}</span> 页，共 <span className="font-medium">{pagination.totalPages}</span> 页
-            <span className="ml-2 text-xs text-slate-500">（共 {pagination.total} 条）</span>
+            <span className="ml-2 text-xs text-slate-600">（共 {pagination.total} 条）</span>
           </p>
           <div className="flex gap-2">
             <button

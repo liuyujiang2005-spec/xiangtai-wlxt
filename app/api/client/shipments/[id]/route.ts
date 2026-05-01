@@ -17,8 +17,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const auth = await requireClient();
-  if (auth instanceof NextResponse) {
-    return auth;
+  if (auth instanceof Response || (auth && typeof auth === 'object' && 'status' in auth)) {
+    return auth as any;
   }
 
   const { id } = await context.params;

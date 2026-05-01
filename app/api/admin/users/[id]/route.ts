@@ -29,8 +29,8 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
 
   try {

@@ -25,8 +25,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   try {
     const { id } = await context.params;
@@ -70,8 +70,8 @@ export async function PATCH(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof NextResponse) {
-    return gate;
+  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+    return gate as any;
   }
   
   try {
