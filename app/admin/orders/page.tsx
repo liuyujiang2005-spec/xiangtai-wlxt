@@ -331,24 +331,24 @@ export default function AdminOrdersPage(): React.ReactNode {
           </p>
         </div>
       </div>
-      <div className="mt-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-4">
-        <input
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-          }}
-          placeholder="搜客户名/唛头/国内快递号/装柜车号/单号"
-          className="rounded border border-slate-200 px-3 py-2 text-sm"
-        />
-        <input
-          value={truckNo}
-          onChange={(e) => {
-            setTruckNo(e.target.value);
-          }}
-          placeholder="批量装柜车号（可选）"
-          className="rounded border border-slate-200 px-3 py-2 text-sm"
-        />
-        <div className="flex gap-2">
+      <div className="mt-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="flex flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600 whitespace-nowrap">运单号:</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="请输入运单号"
+              className="rounded border border-slate-200 px-3 py-1.5 text-sm w-48"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600 whitespace-nowrap">国内单号:</span>
+            <input
+              placeholder="请输入国内单号"
+              className="rounded border border-slate-200 px-3 py-1.5 text-sm w-48"
+            />
+          </div>
           <button
             type="button"
             disabled={rows.length === 0 && !query.trim()}
@@ -359,51 +359,75 @@ export default function AdminOrdersPage(): React.ReactNode {
                 void load(1);
               }
             }}
-            className="rounded border border-slate-300 px-3 py-2 text-sm disabled:opacity-50"
+            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 flex items-center gap-1"
           >
-            搜索
+            查询
           </button>
           <button
             type="button"
-            disabled={batchLoading || selectedIds.length === 0}
             onClick={() => {
-              void batchToLoaded();
+              setQuery("");
+              if (pagination.page !== 1) {
+                setPagination(prev => ({ ...prev, page: 1 }));
+              } else {
+                void load(1);
+              }
             }}
-            className="rounded border border-brand/30 px-3 py-2 text-sm font-medium text-brand disabled:opacity-50"
+            className="rounded border border-slate-200 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"
           >
-            {batchLoading ? "批量处理中..." : "一键改为已装柜"}
+            重置
+          </button>
+          <button type="button" className="text-sm text-blue-500 hover:underline flex items-center ml-2">
+            展开 ▾
           </button>
         </div>
-        <div className="flex gap-2">
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as Row["shipmentStatus"] | "ALL");
-              setSelectedIds([]);
-            }}
-            className="rounded border border-slate-200 px-3 py-2 text-sm"
-          >
-            <option value="ALL">全部状态</option>
-            {STATUS_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+
+        <div className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
           <button
             type="button"
             onClick={exportCsv}
-            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            className="rounded border border-slate-300 bg-white px-4 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-1"
           >
-            导出当前筛选
+            导出
           </button>
+          <button
+            type="button"
+            className="rounded bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-100 border border-blue-200 flex items-center gap-1"
+          >
+            高级查询
+          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as Row["shipmentStatus"] | "ALL");
+                setSelectedIds([]);
+              }}
+              className="rounded border border-slate-200 px-3 py-1.5 text-sm text-slate-600"
+            >
+              <option value="ALL">全部状态</option>
+              {STATUS_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
-      <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+
+      <div className="mt-4 overflow-hidden rounded border border-slate-200 bg-white">
+        <div className="bg-blue-50 px-4 py-2 border-b border-blue-100 flex items-center gap-2">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white font-bold text-xs">i</div>
+          <span className="text-sm text-slate-700">{selectedIds.length > 0 ? `已选中 ${selectedIds.length} 项` : '未选中任何数据'}</span>
+          {selectedIds.length > 0 && (
+             <button onClick={() => setSelectedIds([])} className="ml-4 text-sm text-blue-500 hover:underline">取消勾选</button>
+          )}
+        </div>
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
-              <th className="px-3 py-2 text-left font-medium">
+              <th className="px-3 py-3 text-left font-medium w-12 text-center">
                 <input
                   type="checkbox"
                   checked={
@@ -415,21 +439,23 @@ export default function AdminOrdersPage(): React.ReactNode {
                   }}
                 />
               </th>
-              <th className="px-3 py-2 text-left font-medium">单号</th>
-              <th className="px-3 py-2 text-left font-medium">客户</th>
-              <th className="px-3 py-2 text-left font-medium">唛头</th>
-              <th className="px-3 py-2 text-left font-medium">国内单号</th>
-              <th className="px-3 py-2 text-left font-medium">装柜车号</th>
-              <th className="px-3 py-2 text-left font-medium">仓库</th>
-              <th className="px-3 py-2 text-left font-medium">状态</th>
-              <th className="px-3 py-2 text-left font-medium">强制修改</th>
+              <th className="px-3 py-3 text-left font-medium">运单号</th>
+              <th className="px-3 py-3 text-left font-medium">运单所属用户</th>
+              <th className="px-3 py-3 text-left font-medium">运单状态</th>
+              <th className="px-3 py-3 text-left font-medium">加收金额</th>
+              <th className="px-3 py-3 text-left font-medium">运输方式</th>
+              <th className="px-3 py-3 text-left font-medium">发货时间</th>
+              <th className="px-3 py-3 text-left font-medium">总件数</th>
+              <th className="px-3 py-3 text-left font-medium">总重量</th>
+              <th className="px-3 py-3 text-left font-medium">总体积</th>
+              <th className="px-3 py-3 text-left font-medium">操作</th>
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map((r) => (
+            {filteredRows.map((r: any) => (
               <tr
                   key={r.id}
-                  className={`border-t border-slate-100 ${
+                  className={`border-t border-slate-100 hover:bg-slate-50 transition-colors ${
                     r.shipmentStatus === "OUT_FOR_DELIVERY" &&
                     (() => {
                       const d = new Date(r.updatedAt || "");
@@ -445,7 +471,7 @@ export default function AdminOrdersPage(): React.ReactNode {
                       : ""
                   }`}
                 >
-                <td className="px-3 py-2">
+                <td className="px-3 py-3 w-12 text-center">
                   <input
                     type="checkbox"
                     checked={selectedIds.includes(r.id)}
@@ -458,28 +484,40 @@ export default function AdminOrdersPage(): React.ReactNode {
                     }}
                   />
                 </td>
-                <td className="px-3 py-2 font-mono text-brand">{r.trackingNumber}</td>
-                <td className="px-3 py-2">{r.clientLogin ?? "—"}</td>
-                <td className="px-3 py-2 font-mono">{r.shippingMark ?? "—"}</td>
-                <td className="px-3 py-2">{r.domesticTracking ?? "—"}</td>
-                <td className="px-3 py-2">{r.containerTruckNo ?? "—"}</td>
-                <td className="px-3 py-2">{r.warehouse}</td>
-                <td className="px-3 py-2">{STATUS_LABEL[r.shipmentStatus] ?? r.shipmentStatus}</td>
-                <td className="px-3 py-2">
-                  <select
-                    value={r.shipmentStatus}
-                    onChange={(e) => {
-                      void updateStatus(r.id, e.target.value as Row["shipmentStatus"]);
-                    }}
-                    disabled={savingId === r.id}
-                    className="rounded border border-slate-200 px-2 py-1"
-                  >
-                    {STATUS_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
+                <td className="px-3 py-3 font-mono text-slate-700">{r.trackingNumber}</td>
+                <td className="px-3 py-3 text-slate-700">{r.clientLogin ?? "—"}</td>
+                <td className="px-3 py-3 text-slate-700">{STATUS_LABEL[r.shipmentStatus as keyof typeof STATUS_LABEL] ?? r.shipmentStatus}</td>
+                <td className="px-3 py-3 text-slate-700">0</td>
+                <td className="px-3 py-3 text-slate-700">{r.shippingMethod === 'SEA' ? '海运' : '陆运'}</td>
+                <td className="px-3 py-3 text-slate-500">{r.createdAt ? new Date(r.createdAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : "—"}</td>
+                <td className="px-3 py-3 text-slate-700">{r.totalPackages ?? 0}</td>
+                <td className="px-3 py-3 text-slate-700">{r.actualWeight ?? 0}</td>
+                <td className="px-3 py-3 text-slate-700">{r.actualCBM ?? 0}</td>
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-2 text-brand">
+                    <button type="button" className="hover:underline">编辑</button>
+                    <button type="button" className="hover:underline">物流轨迹</button>
+                    <div className="relative group">
+                      <button type="button" className="flex items-center hover:underline">更多 ▾</button>
+                      <div className="absolute right-0 z-10 hidden w-32 flex-col rounded border border-slate-200 bg-white shadow-lg group-hover:flex">
+                        <select
+                          value={r.shipmentStatus}
+                          onChange={(e) => {
+                            void updateStatus(r.id, e.target.value as Row["shipmentStatus"]);
+                          }}
+                          disabled={savingId === r.id}
+                          className="w-full cursor-pointer px-2 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:outline-none"
+                        >
+                          <option value="" disabled>修改状态</option>
+                          {STATUS_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             ))}
