@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# 在本地提交成功后自动推送到远程仓库；配合 Render「自动部署」可在 push 后触发线上更新。
+# 若首次使用尚未设置上游分支，请先在仓库目录执行：git push -u origin <分支名>
+git push

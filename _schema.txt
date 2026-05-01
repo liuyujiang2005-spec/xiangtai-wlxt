@@ -1,0 +1,229 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Warehouse {
+  YIWU
+  GUANGZHOU
+  SHENZHEN
+  DONGGUAN
+}
+
+enum ShippingMethod {
+  SEA
+  LAND
+}
+
+/// 正式运单状态（管理员可强制修改，客户端轨迹同步）
+enum ShipmentStatus {
+  ORDERED
+  PENDING_INBOUND
+  INBOUND_CONFIRMED
+  LOADED
+  SHIPPED
+  CUSTOMS_CLEARING
+  ARRIVED_TH
+  OUT_FOR_DELIVERY
+  SIGNED
+}
+
+/// 装柜任务状态
+enum LoadingManifestStatus {
+  LOADING
+  SEALED
+  IN_TRANSIT
+  ARRIVED
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  CLIENT
+}
+
+/// 单号流水维度：预报单(YB…) 与 仓内正式运单(无前缀 YB)
+enum TrackingSerialKind {
+  PRE_ORDER
+  WAREHOUSE_BILL
+}
+
+/// 按仓库 + 日期键原子递增流水，避免高并发下重复单号（与随机后缀配合）
+model TrackingSerialCounter {
+  id         String             @id @default(cuid())
+  warehouse  Warehouse
+  dateKey    String
+  kind       TrackingSerialKind
+  lastSerial Int                @default(0)
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([warehouse, dateKey, kind])
+}
+
+/// 预报/预录单业务状态
+enum PreOrderStatus {
+  PRE_ALERT
+  ARRIVED_FULL
+  SHIPPED
+}
+
+/// 产品行：普货 / 敏感货 / 商检货
+enum ProductCargoType {
+  GENERAL
+  SENSITIVE
+  INSPECTION
+}
+
+model TransportBill {
+  id                String         @id @default(cuid())
+  trackingNumber    String         @unique
+  warehouse         Warehouse
+  shippingMethod    ShippingMethod
+  actualCBM         Float
+  actualWeight      Float
+  unitPrice         Float
+  /// 财务中心是否执行过“豁免补差”
+  isWaived          Boolean        @default(false)
+  /// 豁免掉的补差金额（¥）
+  waivedAmount      Float          @default(0)
+  isMinChargeWaived Boolean        @default(false)
+  /// 客户预报未入库前为 true，仓库确认称重入库后为 false
+  isForecastPending Boolean        @default(true)
+  /// 国内快递单号（兼容旧版单字段预报；可为空，明细在 BillProduct）
+  domesticTracking  String?
+  /// 装柜车号（管理员调度与全局搜索使用）
+  containerTruckNo  String?
+  /// 关联装柜任务
+  manifestId        String?
+  manifest          LoadingManifest? @relation(fields: [manifestId], references: [id])
+  /// 货物名称摘要（兼容旧版；可由多品名拼接）
+  goodsName         String?
+  /// 提交预报的客户账号
+  clientUserId      String?
+  clientUser        User?          @relation(fields: [clientUserId], references: [id])
+
+  /// 目的国家（默认可为泰国）
+  destinationCountry  String?        @default("泰国")
+  /// 发货时间
+  departureDate       DateTime?
+  /// 预录单状态（文档中的 PENDING 对应 PRE_ALERT：待预报/待处理）
+  preOrderStatus      PreOrderStatus @default(PRE_ALERT)
+  /// 备注
+  remark              String?
+  /// 唛头（与客户登录名一致；数据库列名 mark）
+  shippingMark        String?        @map("mark")
+  /// 总件数（表头）
+  totalPackages       Int?
+  /// 预估件数
+  estimatedPieces     Int?
+  /// 预报总重量（KG）
+  declaredTotalWeight Float?
+  /// 预报总体积（CBM）
+  declaredTotalVolume Float?
+  /// 正式运单状态
+  shipmentStatus      ShipmentStatus @default(PENDING_INBOUND)
+
+  billProducts BillProduct[]
+  statusHistories BillStatusHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// 装柜管理主表
+model LoadingManifest {
+  id          String               @id @default(cuid())
+  manifestNo  String               @unique
+  warehouse   Warehouse
+  status      LoadingManifestStatus @default(LOADING)
+  carrierInfo String?
+  sealedAt    DateTime?
+  createdById String?
+  createdBy   User?                @relation("ManifestCreatedBy", fields: [createdById], references: [id])
+  bills       TransportBill[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+/// 运单状态轨迹：每次改态都记录时间戳与操作人。
+model BillStatusHistory {
+  id              String         @id @default(cuid())
+  transportBillId String
+  transportBill   TransportBill  @relation(fields: [transportBillId], references: [id], onDelete: Cascade)
+  fromStatus      ShipmentStatus?
+  toStatus        ShipmentStatus
+  operatorId      String?
+  operator        User?          @relation("BillStatusOperator", fields: [operatorId], references: [id])
+  note            String?
+  createdAt       DateTime       @default(now())
+}
+
+/// 预报/运单下的多行产品明细
+model BillProduct {
+  id              String   @id @default(cuid())
+  transportBillId String
+  transportBill   TransportBill @relation(fields: [transportBillId], references: [id], onDelete: Cascade)
+
+  productName      String
+  boxCount         Int      @default(0)
+  cargoType        ProductCargoType @default(GENERAL)
+  unitsPerBox      Int      @default(0)
+  domesticTracking String?
+  inboundTracking  String?
+  sku              String?
+  boxNumber        String?
+  lengthCm         Float?
+  widthCm          Float?
+  heightCm         Float?
+  unitWeightKg     Float?
+  totalWeightKg    Float?
+  unitVolumeCbm    Float?
+  totalVolumeCbm   Float?
+  startBoxNo       Int?
+  endBoxNo         Int?
+  remark           String?
+  sortOrder        Int      @default(0)
+}
+
+model User {
+  id               String          @id @default(cuid())
+  username         String          @unique
+  passwordHash     String
+  role             UserRole
+  /// 客户可选填写的真实姓名，仅客户端展示；员工/管理员可为空
+  realName         String?
+  /// 封禁后禁止登录
+  isBanned         Boolean         @default(false)
+  /// 客户专属折扣（0~1，0.95 = 95 折）
+  discountRate     Float?
+  /// 客户专属海运单价（¥/CBM）
+  specialSeaPrice  Float?
+  /// 客户专属陆运单价（¥/CBM）
+  specialLandPrice Float?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  transportBills   TransportBill[]
+  pricingSettingsUpdated PricingSetting[] @relation("PricingUpdatedBy")
+  statusOperations BillStatusHistory[] @relation("BillStatusOperator")
+  createdManifests LoadingManifest[] @relation("ManifestCreatedBy")
+}
+
+/// 全局渠道单价配置（管理员维护，员工录单自动读取）
+model PricingSetting {
+  id           String   @id @default(cuid())
+  seaPrice     Float    @default(580)
+  landPrice    Float    @default(620)
+  updatedById  String?
+  updatedBy    User?    @relation("PricingUpdatedBy", fields: [updatedById], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
