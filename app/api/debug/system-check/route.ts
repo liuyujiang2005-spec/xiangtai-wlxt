@@ -12,7 +12,7 @@ export async function GET(): Promise<NextResponse> {
 
   try {
     const auth = await requireAdmin();
-    if (auth instanceof Response || (auth && typeof auth === 'object' && 'status' in auth)) {
+    if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
       return auth as any;
     }
 

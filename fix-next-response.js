@@ -23,12 +23,21 @@ files.forEach(file => {
     let content = fs.readFileSync(file, 'utf8');
     let original = content;
 
-    // This regex looks for `if (varName instanceof Response || ...) { return varName; }`
-    // and changes it to `if (...) { return varName as any; }`
-    content = content.replace(/(if\s*\(\s*([a-zA-Z0-9_]+)\s*instanceof\s*Response\s*\|\|\s*\(\s*\2\s*&&\s*typeof\s*\2\s*===\s*'object'\s*&&\s*'status'\s*in\s*\2\s*\)\s*\)\s*\{\s*return\s+)\2(\s*;?\s*\})/g, "$1$2 as any$3");
+    // Restore to original simple `instanceof Response` but without Next.js class prototype issues
+    // Just return `NextResponse.json({ message: "Unauthorized" }, { status: 401 })` directly
+    // Wait, the better way is to just let the requireAdmin return a NextResponse, and we check if it has a `.status` and `.json`?
+    // Actually `auth instanceof Response` is perfectly fine in Next.js 15+ if it's returning NextResponse.
+    // The previous error was `auth instanceof NextResponse` failing in production because NextResponse was sometimes polyfilled or minified.
 
-    // Also handle single line without braces: `if (...) return varName;`
-    content = content.replace(/(if\s*\(\s*([a-zA-Z0-9_]+)\s*instanceof\s*Response\s*\|\|\s*\(\s*\2\s*&&\s*typeof\s*\2\s*===\s*'object'\s*&&\s*'status'\s*in\s*\2\s*\)\s*\)\s*return\s+)\2(\s*;)/g, "$1$2 as any$3");
+    // Let's replace the whole complex if statement with a simple one:
+    // if (auth instanceof Response) { return auth as any; }
+    
+    // We will find all `if (varName instanceof Response || (varName && typeof varName === 'object' && 'status' in varName))`
+    // and replace it with: `if ('status' in (varName as any) && typeof (varName as any).status === 'number') { return varName as any; }`
+    
+    // But since this is TS, we can't just put `as any` inside JS logic cleanly without risking parser issues.
+    
+    content = content.replace(/if\s*\(\s*([a-zA-Z0-9_]+)\s*instanceof\s*Response\s*\|\|\s*\(\s*\1\s*&&\s*typeof\s*\1\s*===\s*'object'\s*&&\s*'status'\s*in\s*\1\s*\)\s*\)/g, "if ($1 && typeof $1 === 'object' && 'status' in $1 && 'headers' in $1)");
 
     if (content !== original) {
         fs.writeFileSync(file, content, 'utf8');
@@ -36,4 +45,4 @@ files.forEach(file => {
     }
 });
 
-console.log(`Updated ${replacedCount} files with 'as any'.`);
+console.log(`Updated ${replacedCount} files with simplified duck typing.`);

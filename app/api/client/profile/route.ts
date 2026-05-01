@@ -21,7 +21,7 @@ const ProfileSchema = z.object({
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
     return gate as any;
   }
 
@@ -45,7 +45,7 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
     return gate as any;
   }
 

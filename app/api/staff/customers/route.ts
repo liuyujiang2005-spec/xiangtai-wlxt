@@ -7,7 +7,7 @@ import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof Response || (gate && typeof gate === 'object' && 'status' in gate)) {
+  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
     return gate as any;
   }
 

@@ -36,7 +36,7 @@ function parsePageParams(url: URL): {
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const auth = await requireClient();
-  if (auth instanceof Response || (auth && typeof auth === 'object' && 'status' in auth)) {
+  if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
     return auth as any;
   }
 
