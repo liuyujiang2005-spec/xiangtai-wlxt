@@ -73,11 +73,36 @@ export function LoginForm() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-57px)] w-full max-w-md flex-col justify-center px-4 py-8">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-6 flex items-center gap-2">
-          <div className="rounded-xl bg-brand/10 p-2">
-            <LogIn className="h-5 w-5 text-brand" />
+    <main className="relative mx-auto flex min-h-screen w-full flex-col items-center justify-center px-4 py-8 sm:flex-row sm:gap-16 sm:px-12 lg:gap-32">
+      {/* 动态背景图层 */}
+      <div 
+        className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+      />
+      {/* 深色半透明遮罩层，增加 5px 模糊度与深色叠加，确保白色文字内容在任何屏幕亮度下清晰可见 */}
+      <div className="absolute inset-0 -z-10 bg-slate-900/60 backdrop-blur-[5px]" />
+
+      {/* Landing Page 独立主标题区域（左侧或上方） */}
+      <div className="mb-12 flex flex-col items-center text-center sm:mb-0 sm:items-start sm:text-left">
+        <h1 
+          className="text-5xl font-black tracking-tight text-white drop-shadow-2xl sm:text-6xl md:text-7xl lg:text-[5rem]"
+          style={{ textShadow: "0 4px 24px rgba(0,0,0,0.6)" }}
+        >
+          湘泰物流
+        </h1>
+        <p 
+          className="mt-6 max-w-md text-lg font-medium text-slate-200 drop-shadow-lg sm:text-xl lg:text-2xl"
+          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+        >
+          高效、安全、智能的跨境物流管理平台
+        </p>
+      </div>
+
+      {/* 毛玻璃卡片效果 (Glassmorphism) - 提高背景不透明度确保文字清晰 */}
+      <div className="relative z-10 w-full max-w-md shrink-0 rounded-2xl border border-white/60 bg-white/95 p-8 shadow-2xl backdrop-blur-xl">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="rounded-xl bg-brand/10 p-2.5">
+            <LogIn className="h-6 w-6 text-brand" />
           </div>
           <div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">系统登录</h2>
