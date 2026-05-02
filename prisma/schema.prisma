@@ -120,7 +120,7 @@ model TransportBill {
   /// 备注
   remark              String?
   /// 唛头（与客户登录名一致；数据库列名 mark）
-  shippingMark        String?        @map("mark")
+  shippingMark        String?
   /// 总件数（表头）
   totalPackages       Int?
   /// 预估件数

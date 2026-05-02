@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 /**
  * 员工读取生效单价（优先客户专属价，其次全局渠道价）。
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   const { searchParams } = new URL(request.url);
   const clientUserId = (searchParams.get("clientUserId") ?? "").trim();

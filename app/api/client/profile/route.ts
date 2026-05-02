@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { handleApiError } from "@/lib/api-error";
 
 const REAL_NAME_MAX = 50;
@@ -21,8 +22,8 @@ const ProfileSchema = z.object({
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
 
   const user = await prisma.user.findUnique({
@@ -45,8 +46,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const gate = await requireClient();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
 
   try {

@@ -655,6 +655,11 @@ export default function StaffDirectInboundPage(): React.ReactNode {
             </div>
 
             <div className="max-h-[78vh] overflow-y-auto px-6 py-5">
+              {formError ? (
+                <p className="sticky top-0 z-20 mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600 shadow">
+                  {formError}
+                </p>
+              ) : null}
               <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-4">
                 <div className="text-xs font-medium uppercase tracking-wide text-slate-500">基本信息</div>
@@ -1036,12 +1041,6 @@ export default function StaffDirectInboundPage(): React.ReactNode {
                     <CurrencyAmount value={chargePreview.finalCharge} />
                   </p>
                 </div>
-              ) : null}
-
-              {formError ? (
-                <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
-                  {formError}
-                </p>
               ) : null}
 
               <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">

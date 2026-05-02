@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 /**
  * 诊断 API：仅开发环境用于排查数据库与计费模块状态。
@@ -12,8 +13,8 @@ export async function GET(): Promise<NextResponse> {
 
   try {
     const auth = await requireAdmin();
-    if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
-      return auth as any;
+    if (isNextResponse(auth)) {
+      return auth;
     }
 
     // Test 1: Prisma connection

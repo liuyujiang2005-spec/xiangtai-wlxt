@@ -13,6 +13,7 @@ import {
   issuePreOrderTrackingNumberWithTransaction,
 } from "@/lib/core/billing";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 const IncomingProductSchema = z.object({
   productName: z.string().trim().min(1, "请填写产品名称").max(100, "产品名称过长"),
@@ -79,8 +80,8 @@ function pickPrimaryDomestic(products: IncomingProduct[]): string {
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireClient();
-    if (auth instanceof Response || (auth && 'status' in auth)) {
-      return auth as NextResponse;
+    if (isNextResponse(auth)) {
+      return auth;
     }
 
     let bodyData: unknown;

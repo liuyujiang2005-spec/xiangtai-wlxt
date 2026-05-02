@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateCharge } from "@/lib/core/billing";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 /**
  * 管理员财务汇总：运单量、应收合计、方式与低消相关统计。
  */
 export async function GET(): Promise<NextResponse> {
   const auth = await requireAdmin();
-  if (auth instanceof Response || (auth && 'status' in auth)) {
-    return auth as NextResponse;
+  if (isNextResponse(auth)) {
+    return auth;
   }
 
   const bills = await prisma.transportBill.findMany({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { PreOrderStatus, Warehouse } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 const VALID_WAREHOUSES: Warehouse[] = [
   "YIWU",
@@ -36,8 +37,8 @@ function parsePageParams(url: URL): {
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const auth = await requireClient();
-  if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
-    return auth as any;
+  if (isNextResponse(auth)) {
+    return auth;
   }
 
   const url = new URL(request.url);

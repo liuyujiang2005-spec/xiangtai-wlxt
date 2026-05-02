@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 
 type RouteParams = {
   params: Promise<{ id: string }>;
@@ -14,8 +15,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const auth = await requireClient();
-  if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
-    return auth as any;
+  if (isNextResponse(auth)) {
+    return auth;
   }
 
   const { id } = await context.params;

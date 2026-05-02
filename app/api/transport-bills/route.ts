@@ -10,6 +10,7 @@ import {
   issueWarehouseBillTrackingNumberWithTransaction,
 } from "@/lib/core/billing";
 import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { z } from "zod";
 import { handleApiError } from "@/lib/api-error";
 
@@ -234,8 +235,8 @@ function parsePagination(request: Request): { page: number; pageSize: number } {
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireStaffOrAdmin();
-    if (auth instanceof Response || (auth && 'status' in auth)) {
-      return auth as NextResponse;
+    if (isNextResponse(auth)) {
+      return auth;
     }
 
     const searchTerm = parseSearchTerm(request);
@@ -319,8 +320,8 @@ export async function GET(request: Request): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const auth = await requireStaffOrAdmin();
-  if (auth instanceof Response || (auth && 'status' in auth)) {
-    return auth as NextResponse;
+  if (isNextResponse(auth)) {
+    return auth;
   }
 
   try {

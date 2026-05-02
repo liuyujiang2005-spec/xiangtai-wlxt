@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { type LoadingManifestStatus } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { z } from "zod";
 import { handleApiError } from "@/lib/api-error";
 
@@ -25,8 +26,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   try {
     const { id } = await context.params;
@@ -70,8 +71,8 @@ export async function PATCH(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   
   try {

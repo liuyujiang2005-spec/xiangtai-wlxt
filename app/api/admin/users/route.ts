@@ -4,6 +4,7 @@ import { z } from "zod";
 import { type UserRole } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { handleApiError } from "@/lib/api-error";
 
 const REAL_NAME_MAX = 50;
@@ -41,8 +42,8 @@ function normalizeOptionalRealName(
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
 
   const users = await prisma.user.findMany({
@@ -95,8 +96,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
 
   try {

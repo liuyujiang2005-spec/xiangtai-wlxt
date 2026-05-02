@@ -5,6 +5,7 @@ import {
 } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireStaffOrAdmin } from "@/lib/auth/require-staff-or-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { z } from "zod";
 import { handleApiError } from "@/lib/api-error";
 
@@ -55,8 +56,8 @@ async function issueManifestNo(tx: any, now: Date): Promise<string> {
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof Response || (gate && 'status' in gate)) {
-    return gate as NextResponse;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   try {
     const { searchParams } = new URL(request.url);
@@ -113,8 +114,8 @@ export async function GET(request: Request): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const gate = await requireStaffOrAdmin();
-  if (gate instanceof Response || (gate && 'status' in gate)) {
-    return gate as NextResponse;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   try {
     const body = CreateBodySchema.parse(await request.json());

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { z } from "zod";
 import { handleApiError } from "@/lib/api-error";
 
@@ -14,8 +15,8 @@ const UpdateBodySchema = z.object({
  */
 export async function GET(): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   try {
     const setting = await prisma.pricingSetting.findFirst({
@@ -41,8 +42,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
   try {
     const body = UpdateBodySchema.parse(await request.json());

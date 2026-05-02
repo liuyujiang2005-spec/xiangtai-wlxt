@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateCharge } from "@/lib/core/billing";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { handleApiError } from "@/lib/api-error";
 
 type RouteParams = {
@@ -18,8 +19,8 @@ export async function PATCH(
   context: RouteParams
 ): Promise<NextResponse> {
   const gate = await requireAdmin();
-  if (gate && typeof gate === 'object' && 'status' in gate && 'headers' in gate) {
-    return gate as any;
+  if (isNextResponse(gate)) {
+    return gate;
   }
 
   try {

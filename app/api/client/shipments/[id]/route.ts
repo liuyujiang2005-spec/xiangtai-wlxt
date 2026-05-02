@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateCharge } from "@/lib/core/billing";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { buildShipmentTimeline } from "@/lib/customer/build-shipment-timeline";
 import { getClientShipmentStatusLabel } from "@/lib/customer/shipment-display";
 
@@ -17,8 +18,8 @@ export async function GET(
   context: RouteParams
 ): Promise<NextResponse> {
   const auth = await requireClient();
-  if (auth && typeof auth === 'object' && 'status' in auth && 'headers' in auth) {
-    return auth as any;
+  if (isNextResponse(auth)) {
+    return auth;
   }
 
   const { id } = await context.params;

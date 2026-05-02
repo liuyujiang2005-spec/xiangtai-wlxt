@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ClipboardPenLine, PackageCheck } from "lucide-react";
 import { CurrencyAmount } from "@/app/components/CurrencyAmount";
 
 type Warehouse = "YIWU" | "GUANGZHOU" | "SHENZHEN" | "DONGGUAN";
 type ShippingMethod = "SEA" | "LAND";
+type CustomerOption = { id: string; username: string; realName: string | null };
 
 type CreateResult = {
   message: string;
@@ -67,16 +68,25 @@ export default function NewTransportBillPage() {
   const [actualWeight, setActualWeight] = useState<string>("");
   const [unitPrice, setUnitPrice] = useState<string>("");
   const [isMinChargeWaived, setIsMinChargeWaived] = useState<boolean>(false);
+  const [clientUserId, setClientUserId] = useState<string>("");
+  const [customers, setCustomers] = useState<CustomerOption[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [result, setResult] = useState<CreateResult | null>(null);
+
+  useEffect(() => {
+    fetch("/api/staff/customers", { credentials: "include" })
+      .then((r) => r.ok ? r.json() : { list: [] })
+      .then((d: { list?: CustomerOption[] }) => setCustomers(d.list ?? []))
+      .catch(() => setCustomers([]));
+  }, []);
 
   /**
    * 表单是否可提交，用于按钮禁用状态控制。
    */
   const canSubmit = useMemo(() => {
-    return actualCBM !== "" && actualWeight !== "" && unitPrice !== "";
-  }, [actualCBM, actualWeight, unitPrice]);
+    return actualCBM !== "" && actualWeight !== "" && unitPrice !== "" && clientUserId !== "";
+  }, [actualCBM, actualWeight, unitPrice, clientUserId]);
 
   /**
    * 根据已填体积与单价计算界面上的应付预览。
@@ -120,6 +130,7 @@ export default function NewTransportBillPage() {
           actualWeight: Number(actualWeight),
           unitPrice: Number(unitPrice),
           isMinChargeWaived,
+          clientUserId,
         }),
       });
 
@@ -254,6 +265,22 @@ export default function NewTransportBillPage() {
             onChange={(event) => setUnitPrice(event.target.value)}
             placeholder="例如 580"
           />
+        </label>
+
+        <label className="block text-sm">
+          <span className="mb-1 block text-slate-600">所属客户</span>
+          <select
+            className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none ring-brand/20 focus:ring"
+            value={clientUserId}
+            onChange={(event) => setClientUserId(event.target.value)}
+          >
+            <option value="">— 请选择客户 —</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.username}{c.realName ? `（${c.realName}）` : ""}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm">

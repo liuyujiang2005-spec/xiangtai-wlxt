@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateCharge } from "@/lib/core/billing";
 import { requireClient } from "@/lib/auth/require-client";
+import { isNextResponse } from "@/lib/auth/is-next-response";
 import { getClientShipmentStatusLabel } from "@/lib/customer/shipment-display";
 import { handleApiError } from "@/lib/api-error";
 
@@ -24,8 +25,8 @@ function parsePagination(request: Request): { page: number; pageSize: number } {
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const auth = await requireClient();
-    if (auth instanceof Response || (auth && 'status' in auth)) {
-      return auth as NextResponse;
+    if (isNextResponse(auth)) {
+      return auth;
     }
 
     const { page, pageSize } = parsePagination(request);
