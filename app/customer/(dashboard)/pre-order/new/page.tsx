@@ -7,7 +7,7 @@ import { PackagePlus, Plus, Trash2 } from "lucide-react";
 
 type Warehouse = "YIWU" | "GUANGZHOU" | "SHENZHEN" | "DONGGUAN";
 type ShippingMethod = "SEA" | "LAND";
-type PreOrderStatus = "PRE_ALERT" | "ARRIVED_FULL" | "SHIPPED";
+type PreOrderStatus = "PRE_ALERT" | "ARRIVED_FULL" | "IN_TRANSIT" | "WAREHOUSE_RECEIVED" | "SIGNED" | "LOADED" | "SHIPPED";
 type ProductCargoType = "GENERAL" | "SENSITIVE" | "INSPECTION";
 
 const WAREHOUSE_OPTIONS: { value: Warehouse; label: string }[] = [
@@ -25,19 +25,15 @@ const SHIPPING_OPTIONS: { value: ShippingMethod; label: string }[] = [
 const STATUS_OPTIONS: { value: PreOrderStatus; label: string }[] = [
   { value: "PRE_ALERT", label: "已预报" },
   { value: "ARRIVED_FULL", label: "已到齐" },
+  { value: "IN_TRANSIT", label: "运输中" },
+  { value: "WAREHOUSE_RECEIVED", label: "已入库" },
+  { value: "SIGNED", label: "已签收" },
+  { value: "LOADED", label: "已装柜" },
   { value: "SHIPPED", label: "已发货" },
 ];
 
-const COUNTRY_OPTIONS: string[] = [
-  "泰国",
-  "越南",
-  "马来西亚",
-  "新加坡",
-  "菲律宾",
-  "印度尼西亚",
-  "柬埔寨",
-  "其他",
-];
+/** 目前仅服务泰国线路 */
+const DESTINATION_COUNTRY = "泰国";
 
 type ProductRow = {
   key: string;
@@ -51,6 +47,10 @@ type ProductRow = {
   lengthCm: string;
   widthCm: string;
   heightCm: string;
+  unitWeightKg: string;
+  startBoxNo: string;
+  endBoxNo: string;
+  remark: string;
 };
 
 type PreOrderApiJson = {
@@ -84,6 +84,10 @@ function emptyProductRow(): ProductRow {
     lengthCm: "",
     widthCm: "",
     heightCm: "",
+    unitWeightKg: "",
+    startBoxNo: "",
+    endBoxNo: "",
+    remark: "",
   };
 }
 
@@ -137,11 +141,27 @@ function CustomerPreOrderNewForm() {
   const [remark, setRemark] = useState<string>("");
   /** 当前登录名，与唛头一致，仅展示 */
   const [loginName, setLoginName] = useState<string>("");
-  const [destinationCountry, setDestinationCountry] =
-    useState<string>("泰国");
+  // 目的国固定为泰国
   const [products, setProducts] = useState<ProductRow[]>([emptyProductRow()]);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  /**
+   * 计算单行产品体积（CBM）。
+   */
+  const rowVolumeCbm = useCallback((row: ProductRow): string => {
+    const l = Number.parseFloat(row.lengthCm);
+    const w = Number.parseFloat(row.widthCm);
+    const h = Number.parseFloat(row.heightCm);
+    const boxes = Number.parseInt(row.boxCount, 10);
+    if (
+      Number.isNaN(l) || Number.isNaN(w) || Number.isNaN(h) || Number.isNaN(boxes) ||
+      l <= 0 || w <= 0 || h <= 0 || boxes <= 0
+    ) {
+      return "-";
+    }
+    return ((l * w * h / 1_000_000) * boxes).toFixed(4);
+  }, []);
 
   /**
    * 根据长×宽×高(cm)与箱数汇总预估体积（CBM）。
@@ -271,6 +291,19 @@ function CustomerPreOrderNewForm() {
           row.heightCm.trim() === ""
             ? undefined
             : Number.parseFloat(row.heightCm),
+        unitWeightKg:
+          row.unitWeightKg.trim() === ""
+            ? undefined
+            : Number.parseFloat(row.unitWeightKg),
+        startBoxNo:
+          row.startBoxNo.trim() === ""
+            ? undefined
+            : Number.parseInt(row.startBoxNo.trim(), 10),
+        endBoxNo:
+          row.endBoxNo.trim() === ""
+            ? undefined
+            : Number.parseInt(row.endBoxNo.trim(), 10),
+        remark: row.remark.trim() || undefined,
       }));
 
       setSubmitting(true);
@@ -287,7 +320,7 @@ function CustomerPreOrderNewForm() {
               : null,
             preOrderStatus,
             remark: remark.trim(),
-            destinationCountry: destinationCountry.trim(),
+            destinationCountry: DESTINATION_COUNTRY,
             totalPackages: tp,
             declaredTotalWeight: Number.isNaN(tw) ? 0 : tw,
             declaredTotalVolume: Number.isNaN(tv) ? 0 : tv,
@@ -312,7 +345,6 @@ function CustomerPreOrderNewForm() {
       departureDate,
       preOrderStatus,
       remark,
-      destinationCountry,
       declaredTotalWeight,
       computedTotalPieces,
       computedVolumeCbm,
@@ -469,28 +501,6 @@ function CustomerPreOrderNewForm() {
                 ))}
               </select>
             </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium text-slate-600">
-                目的国家
-              </span>
-              <select
-                value={
-                  COUNTRY_OPTIONS.includes(destinationCountry)
-                    ? destinationCountry
-                    : "其他"
-                }
-                onChange={(e) => {
-                  setDestinationCountry(e.target.value);
-                }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-brand-dark outline-none ring-brand focus:ring-2"
-              >
-                {COUNTRY_OPTIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </label>
             <div className="block rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5">
               <span className="mb-1 block text-xs font-medium text-slate-600">
                 总件数（自动）
@@ -608,6 +618,21 @@ function CustomerPreOrderNewForm() {
                   </th>
                   <th className="border-b border-slate-200 px-2 py-2 font-medium">
                     高(cm)
+                  </th>
+                  <th className="border-b border-slate-200 px-2 py-2 font-medium">
+                    单件重(KG)
+                  </th>
+                  <th className="border-b border-slate-200 px-2 py-2 font-medium">
+                    体积(CBM)
+                  </th>
+                  <th className="border-b border-slate-200 px-2 py-2 font-medium">
+                    起始箱号
+                  </th>
+                  <th className="border-b border-slate-200 px-2 py-2 font-medium">
+                    结束箱号
+                  </th>
+                  <th className="border-b border-slate-200 px-2 py-2 font-medium">
+                    备注
                   </th>
                   <th className="border-b border-slate-200 px-2 py-2 font-medium">
                     操作
@@ -733,6 +758,56 @@ function CustomerPreOrderNewForm() {
                           updateProduct(row.key, { heightCm: e.target.value });
                         }}
                         className="w-16 rounded border border-slate-200 px-1.5 py-1 text-xs sm:text-sm"
+                      />
+                    </td>
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.001"
+                        value={row.unitWeightKg}
+                        onChange={(e) => {
+                          updateProduct(row.key, { unitWeightKg: e.target.value });
+                        }}
+                        placeholder="0.000"
+                        className="w-20 rounded border border-slate-200 px-1.5 py-1 text-xs sm:text-sm"
+                      />
+                    </td>
+                    <td className="px-1 py-1 text-right font-mono text-xs text-slate-600">
+                      {rowVolumeCbm(row)}
+                    </td>
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={1}
+                        value={row.startBoxNo}
+                        onChange={(e) => {
+                          updateProduct(row.key, { startBoxNo: e.target.value });
+                        }}
+                        placeholder="起"
+                        className="w-16 rounded border border-slate-200 px-1.5 py-1 text-xs sm:text-sm"
+                      />
+                    </td>
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={1}
+                        value={row.endBoxNo}
+                        onChange={(e) => {
+                          updateProduct(row.key, { endBoxNo: e.target.value });
+                        }}
+                        placeholder="止"
+                        className="w-16 rounded border border-slate-200 px-1.5 py-1 text-xs sm:text-sm"
+                      />
+                    </td>
+                    <td className="px-1 py-1">
+                      <input
+                        value={row.remark}
+                        onChange={(e) => {
+                          updateProduct(row.key, { remark: e.target.value });
+                        }}
+                        placeholder="选填"
+                        className="w-full min-w-[5rem] rounded border border-slate-200 px-1.5 py-1 text-xs sm:text-sm"
                       />
                     </td>
                     <td className="px-1 py-1">

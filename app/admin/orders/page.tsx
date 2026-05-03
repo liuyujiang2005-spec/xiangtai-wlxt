@@ -86,6 +86,8 @@ export default function AdminOrdersPage(): React.ReactNode {
   const [statusFilter, setStatusFilter] = useState<Row["shipmentStatus"] | "ALL">(
     "ALL"
   );
+  const [shippingMarkFilter, setShippingMarkFilter] = useState("");
+  const [domesticTrackingFilter, setDomesticTrackingFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchLoading, setBatchLoading] = useState(false);
   const [truckNo, setTruckNo] = useState("");
@@ -137,6 +139,12 @@ export default function AdminOrdersPage(): React.ReactNode {
       if (query.trim()) {
         qs.set("query", query.trim());
       }
+      if (shippingMarkFilter.trim()) {
+        qs.set("shippingMark", shippingMarkFilter.trim());
+      }
+      if (domesticTrackingFilter.trim()) {
+        qs.set("domesticTracking", domesticTrackingFilter.trim());
+      }
       qs.set("page", String(pageIndex));
       qs.set("pageSize", String(pagination.pageSize));
 
@@ -156,7 +164,7 @@ export default function AdminOrdersPage(): React.ReactNode {
       setError(e instanceof Error ? e.message : "加载失败");
       setRows([]);
     }
-  }, [query, pagination.pageSize]);
+  }, [query, shippingMarkFilter, domesticTrackingFilter, pagination.pageSize]);
 
   useEffect(() => {
     void load(pagination.page);
@@ -343,15 +351,25 @@ export default function AdminOrdersPage(): React.ReactNode {
             />
           </div>
           <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600 whitespace-nowrap">唛头:</span>
+            <input
+              value={shippingMarkFilter}
+              onChange={(e) => setShippingMarkFilter(e.target.value)}
+              placeholder="精准唛头查询"
+              className="rounded border border-slate-200 px-3 py-1.5 text-sm w-40"
+            />
+          </div>
+          <div className="flex items-center gap-2">
             <span className="text-sm text-slate-600 whitespace-nowrap">国内单号:</span>
             <input
+              value={domesticTrackingFilter}
+              onChange={(e) => setDomesticTrackingFilter(e.target.value)}
               placeholder="请输入国内单号"
               className="rounded border border-slate-200 px-3 py-1.5 text-sm w-48"
             />
           </div>
           <button
             type="button"
-            disabled={rows.length === 0 && !query.trim()}
             onClick={() => {
               if (pagination.page !== 1) {
                 setPagination(prev => ({ ...prev, page: 1 }));
@@ -359,7 +377,7 @@ export default function AdminOrdersPage(): React.ReactNode {
                 void load(1);
               }
             }}
-            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 flex items-center gap-1"
+            className="rounded bg-blue-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-600 flex items-center gap-1"
           >
             查询
           </button>
@@ -367,6 +385,8 @@ export default function AdminOrdersPage(): React.ReactNode {
             type="button"
             onClick={() => {
               setQuery("");
+              setShippingMarkFilter("");
+              setDomesticTrackingFilter("");
               if (pagination.page !== 1) {
                 setPagination(prev => ({ ...prev, page: 1 }));
               } else {
@@ -440,7 +460,7 @@ export default function AdminOrdersPage(): React.ReactNode {
                 />
               </th>
               <th className="px-3 py-3 text-left font-medium">运单号</th>
-              <th className="px-3 py-3 text-left font-medium">运单所属用户</th>
+              <th className="px-3 py-3 text-left font-medium">唛头</th>
               <th className="px-3 py-3 text-left font-medium">运单状态</th>
               <th className="px-3 py-3 text-left font-medium">加收金额</th>
               <th className="px-3 py-3 text-left font-medium">运输方式</th>
@@ -485,7 +505,7 @@ export default function AdminOrdersPage(): React.ReactNode {
                   />
                 </td>
                 <td className="px-3 py-3 font-mono text-slate-700">{r.trackingNumber}</td>
-                <td className="px-3 py-3 text-slate-700">{r.clientLogin ?? "—"}</td>
+                <td className="px-3 py-3 text-slate-700">{r.shippingMark ?? r.clientLogin ?? "—"}</td>
                 <td className="px-3 py-3 text-slate-700">{STATUS_LABEL[r.shipmentStatus as keyof typeof STATUS_LABEL] ?? r.shipmentStatus}</td>
                 <td className="px-3 py-3 text-slate-700">0</td>
                 <td className="px-3 py-3 text-slate-700">{r.shippingMethod === 'SEA' ? '海运' : '陆运'}</td>

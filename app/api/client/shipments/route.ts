@@ -21,6 +21,7 @@ function parsePagination(request: Request): { page: number; pageSize: number } {
 
 /**
  * 客户只读运单列表：仅返回当前登录客户关联的运单（含预报单），含状态文案与待支付金额。
+ * 支持 query 参数搜索运单号/唛头/国内单号/货名，但仍限制在本账号范围内。
  */
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -30,13 +31,26 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     const { page, pageSize } = parsePagination(request);
+    const { searchParams } = new URL(request.url);
+    const query = (searchParams.get("query") ?? "").trim();
+
+    const baseWhere = { clientUserId: auth.sub };
+    const where = query
+      ? {
+          ...baseWhere,
+          OR: [
+            { trackingNumber: { contains: query } },
+            { shippingMark: { contains: query } },
+            { domesticTracking: { contains: query } },
+            { goodsName: { contains: query } },
+          ],
+        }
+      : baseWhere;
 
     const [total, bills] = await Promise.all([
-      prisma.transportBill.count({
-        where: { clientUserId: auth.sub },
-      }),
+      prisma.transportBill.count({ where }),
       prisma.transportBill.findMany({
-        where: { clientUserId: auth.sub },
+        where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * pageSize,
         take: pageSize,

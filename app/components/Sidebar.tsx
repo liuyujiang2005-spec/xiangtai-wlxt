@@ -46,7 +46,7 @@ function buildNavItems(role: string | null): NavItem[] {
       { href: "/admin/finance", label: "财务结算与利润", icon: CircleDollarSign },
       { href: "/admin/orders", label: "全局运单审计", icon: Truck },
       { href: "/admin/loading", label: "装柜管理", icon: Package },
-      { href: "/pricing", label: "头程价格", icon: FileText },
+      { href: "/admin/pricing", label: "头程价格管理", icon: FileText },
       { href: "/admin/channels-pricing", label: "渠道与单价管理", icon: Warehouse },
       { href: "/admin/accounts", label: "员工与客户审计", icon: Users },
       { href: "/admin/customs", label: "关务监控", icon: ShieldCheck },
@@ -70,7 +70,7 @@ function buildNavItems(role: string | null): NavItem[] {
     return [
       { href: "/customer/pricing", label: "头程价格", icon: FileText },
       { href: "/customer/pre-order", label: "新建预报", icon: PackagePlus },
-      { href: "/customer/shipments", label: "我的运单", icon: Ship },
+      { href: "/customer/shipments", label: "运单列表", icon: Ship },
       { href: "/tracking", label: "查快递", icon: MapPin },
       { href: "/ip-check", label: "知识产权查询", icon: Search },
     ];
@@ -91,6 +91,9 @@ function isNavActive(pathname: string, href: string): boolean {
   }
   if (href === "/admin") {
     return pathname === "/admin";
+  }
+  if (href === "/admin/pricing") {
+    return pathname === "/admin/pricing" || pathname.startsWith("/admin/pricing/");
   }
   if (href === "/staff") {
     return pathname === "/staff";

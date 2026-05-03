@@ -228,6 +228,8 @@ model PricingSetting {
   id           String   @id @default(cuid())
   seaPrice     Float    @default(580)
   landPrice    Float    @default(620)
+  /// 头程报价单完整内容（JSON 字符串，管理员可全量编辑）
+  pricingJson  String?
   updatedById  String?
   updatedBy    User?    @relation("PricingUpdatedBy", fields: [updatedById], references: [id])
   createdAt    DateTime @default(now())

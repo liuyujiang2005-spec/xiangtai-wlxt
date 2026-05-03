@@ -101,6 +101,20 @@ function parseForecastOnly(request: Request): boolean {
 }
 
 /**
+ * 解析单字段精准过滤参数（唛头、国内单号）。
+ */
+function parseFieldFilters(request: Request): {
+  shippingMark: string;
+  domesticTracking: string;
+} {
+  const { searchParams } = new URL(request.url);
+  return {
+    shippingMark: (searchParams.get("shippingMark") ?? "").trim(),
+    domesticTracking: (searchParams.get("domesticTracking") ?? "").trim(),
+  };
+}
+
+/**
  * 可选字符串裁剪。
  */
 function cleanText(value: string | undefined): string {
@@ -241,24 +255,35 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     const searchTerm = parseSearchTerm(request);
     const forecastOnly = parseForecastOnly(request);
+    const { shippingMark: shippingMarkFilter, domesticTracking: domesticTrackingFilter } = parseFieldFilters(request);
     const { page, pageSize } = parsePagination(request);
 
-    const where = {
-      ...(forecastOnly ? { isForecastPending: true } : {}),
-      ...(searchTerm
-        ? {
-            OR: [
-              { trackingNumber: { contains: searchTerm } },
-              { shippingMark: { contains: searchTerm } },
-              { domesticTracking: { contains: searchTerm } },
-              { containerTruckNo: { contains: searchTerm } },
-              { clientUser: { username: { contains: searchTerm } } },
-              { goodsName: { contains: searchTerm } },
-              { billProducts: { some: { productName: { contains: searchTerm } } } },
-            ],
-          }
-        : {}),
-    };
+    // 构建 AND 条件列表：各独立过滤条件同时生效
+    const andConditions: object[] = [];
+    if (forecastOnly) {
+      andConditions.push({ isForecastPending: true });
+    }
+    if (searchTerm) {
+      andConditions.push({
+        OR: [
+          { trackingNumber: { contains: searchTerm } },
+          { shippingMark: { contains: searchTerm } },
+          { domesticTracking: { contains: searchTerm } },
+          { containerTruckNo: { contains: searchTerm } },
+          { clientUser: { username: { contains: searchTerm } } },
+          { goodsName: { contains: searchTerm } },
+          { billProducts: { some: { productName: { contains: searchTerm } } } },
+        ],
+      });
+    }
+    if (shippingMarkFilter) {
+      andConditions.push({ shippingMark: { contains: shippingMarkFilter } });
+    }
+    if (domesticTrackingFilter) {
+      andConditions.push({ domesticTracking: { contains: domesticTrackingFilter } });
+    }
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : {};
 
     const [total, bills] = await Promise.all([
       prisma.transportBill.count({ where }),

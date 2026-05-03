@@ -5,19 +5,38 @@ import { Search, Package, MapPin, Clock } from "lucide-react";
 
 type History = {
   id?: string;
-  status: string;
+  status?: string;
   note: string;
   time: string;
+  location?: string;
 };
 
 type TrackingData = {
   id?: string;
   trackingNumber: string;
-  status: string;
+  status?: string;
+  state?: string;
   shippingMethod?: string;
   warehouse?: string;
   company?: string;
   histories: History[];
+};
+
+/** 快递100快递状态码对应文案 */
+const KUAIDI_STATE: Record<string, string> = {
+  "0": "在途",
+  "1": "揽件",
+  "2": "疑难",
+  "3": "签收",
+  "4": "退签",
+  "5": "派件",
+  "6": "退回",
+  "7": "转投",
+  "10": "待清关",
+  "11": "清关中",
+  "12": "已清关",
+  "13": "清关异常",
+  "14": "收件人拒收",
 };
 
 export default function TrackingPage() {
@@ -57,8 +76,8 @@ export default function TrackingPage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-10">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-brand-dark tracking-tight">全球物流包裹追踪</h1>
-        <p className="mt-3 text-sm text-slate-600">支持查询湘泰内部运单号及主流第三方快递单号</p>
+        <h1 className="text-3xl font-bold text-brand-dark tracking-tight">中泰专线物流追踪</h1>
+        <p className="mt-3 text-sm text-slate-600">支持查询湘泰内部运单号，以及通过快递100查询国内主流快递单号</p>
       </div>
 
       <div className="mx-auto max-w-2xl">
@@ -87,16 +106,27 @@ export default function TrackingPage() {
       {result && (
         <div className="mx-auto mt-10 max-w-2xl bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <Package className="h-6 w-6 text-brand-accent" />
-              <div>
-                <p className="text-sm font-medium text-slate-500">
-                  {result.type === "internal" ? "湘泰物流专线" : result.data.company}
-                </p>
-                <p className="text-lg font-bold text-brand-dark font-mono">
-                  {result.data.trackingNumber}
-                </p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Package className="h-6 w-6 text-brand-accent" />
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    {result.type === "internal"
+                      ? "湘泰物流专线"
+                      : result.data.company
+                        ? `快递100 · ${result.data.company}`
+                        : "第三方快递"}
+                  </p>
+                  <p className="text-lg font-bold text-brand-dark font-mono">
+                    {result.data.trackingNumber}
+                  </p>
+                </div>
               </div>
+              {result.data.state !== undefined && (
+                <span className="rounded-full bg-brand-accent/10 px-3 py-1 text-sm font-medium text-brand-accent">
+                  {KUAIDI_STATE[result.data.state] ?? result.data.state}
+                </span>
+              )}
             </div>
           </div>
 
@@ -107,13 +137,19 @@ export default function TrackingPage() {
                 <div className="space-y-8">
                   {result.data.histories.map((history, idx) => (
                     <div key={history.id || idx} className="relative">
-                      <div className={`absolute -left-[29px] top-1 h-3 w-3 rounded-full border-2 border-white ${idx === 0 ? 'bg-brand-accent shadow-[0_0_0_2px_rgba(255,140,0,0.2)]' : 'bg-slate-300'}`}></div>
-                      <p className={`text-base ${idx === 0 ? 'font-medium text-brand-dark' : 'text-slate-600'}`}>
-                        {history.note || `状态更新: ${history.status}`}
+                      <div className={`absolute -left-[29px] top-1 h-3 w-3 rounded-full border-2 border-white ${idx === 0 ? "bg-brand-accent shadow-[0_0_0_2px_rgba(255,140,0,0.2)]" : "bg-slate-300"}`}></div>
+                      <p className={`text-base ${idx === 0 ? "font-medium text-brand-dark" : "text-slate-600"}`}>
+                        {history.note || `状态更新: ${history.status ?? ""}`}
                       </p>
+                      {history.location && (
+                        <div className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
+                          <MapPin className="h-3 w-3" />
+                          <span>{history.location}</span>
+                        </div>
+                      )}
                       <div className="mt-1 flex items-center gap-1.5 text-sm text-slate-400">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>{new Date(history.time).toLocaleString('zh-CN')}</span>
+                        <span>{new Date(history.time).toLocaleString("zh-CN")}</span>
                       </div>
                     </div>
                   ))}

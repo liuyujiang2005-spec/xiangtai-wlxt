@@ -26,6 +26,10 @@ const IncomingProductSchema = z.object({
   lengthCm: z.number().min(0, "尺寸不能为负数").optional().nullable(),
   widthCm: z.number().min(0, "尺寸不能为负数").optional().nullable(),
   heightCm: z.number().min(0, "尺寸不能为负数").optional().nullable(),
+  unitWeightKg: z.number().min(0, "重量不能为负数").optional().nullable(),
+  startBoxNo: z.number().int("起始箱号必须为整数").min(1).optional().nullable(),
+  endBoxNo: z.number().int("结束箱号必须为整数").min(1).optional().nullable(),
+  remark: z.string().trim().max(500).optional().nullable(),
 });
 
 type IncomingProduct = z.infer<typeof IncomingProductSchema>;
@@ -38,9 +42,9 @@ const CreatePreOrderSchema = z.object({
     message: "请选择有效运输方式",
   }),
   departureDate: z.string().optional().nullable(),
-  preOrderStatus: z.enum(["PRE_ALERT", "ARRIVED_FULL", "SHIPPED"]).default("PRE_ALERT"),
+  preOrderStatus: z.enum(["PRE_ALERT", "ARRIVED_FULL", "IN_TRANSIT", "WAREHOUSE_RECEIVED", "SIGNED", "LOADED", "SHIPPED"]).default("PRE_ALERT"),
   remark: z.string().trim().max(500).optional().nullable(),
-  destinationCountry: z.string().trim().min(1, "请填写或选择目的国家").max(100),
+  destinationCountry: z.string().trim().max(100).optional().nullable(),
   totalPackages: z.number().int("总件数须为非负整数").min(0),
   declaredTotalWeight: z.number().min(0, "总重量须为非负数字"),
   declaredTotalVolume: z.number().min(0, "总体积须为非负数字"),
@@ -97,7 +101,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const shippingMethod = body.shippingMethod as ShippingMethod;
     const preOrderStatus = body.preOrderStatus as PreOrderStatus;
     const remark = body.remark || null;
-    const destinationCountry = body.destinationCountry;
+    const destinationCountry = "泰国";
     const totalPackages = body.totalPackages;
     const declaredTotalWeight = body.declaredTotalWeight;
     const declaredTotalVolume = body.declaredTotalVolume;
@@ -153,6 +157,10 @@ export async function POST(request: Request): Promise<NextResponse> {
                 lengthCm: p.lengthCm ?? null,
                 widthCm: p.widthCm ?? null,
                 heightCm: p.heightCm ?? null,
+                unitWeightKg: p.unitWeightKg ?? null,
+                startBoxNo: p.startBoxNo ?? null,
+                endBoxNo: p.endBoxNo ?? null,
+                remark: p.remark || null,
                 sortOrder: index,
               })),
             },

@@ -17,7 +17,6 @@ type ShipmentRow = {
   trackingNumber: string;
   warehouse: "YIWU" | "GUANGZHOU" | "SHENZHEN" | "DONGGUAN";
   shippingMethod: "SEA" | "LAND";
-  destinationCountry: string;
   statusLabel: string;
   shippingMark: string;
   totalPackages: number | null;
@@ -60,24 +59,29 @@ function formatOrderTime(iso: string): string {
 }
 
 /**
- * 客户「我的运单」高密度列表（ERP 风格）。
+ * 客户运单列表（ERP 风格）。
  */
 export default function CustomerShipmentsPage() {
   const [rows, setRows] = useState<ShipmentRow[]>([]);
   const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, pageSize: 50, totalPages: 0 });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [appliedQuery, setAppliedQuery] = useState<string>("");
 
   /**
-   * 加载运单列表。
+   * 加载运单列表，支持搜索。
    */
-  const load = useCallback(async (pageIndex: number): Promise<void> => {
+  const load = useCallback(async (pageIndex: number, query: string): Promise<void> => {
     setLoading(true);
     setError("");
     try {
       const qs = new URLSearchParams();
       qs.set("page", String(pageIndex));
       qs.set("pageSize", String(pagination.pageSize));
+      if (query) {
+        qs.set("query", query);
+      }
 
       const response = await fetch(`/api/client/shipments?${qs.toString()}`, {
         credentials: "include",
@@ -102,8 +106,21 @@ export default function CustomerShipmentsPage() {
   }, [pagination.pageSize]);
 
   useEffect(() => {
-    void load(pagination.page);
-  }, [load, pagination.page]);
+    void load(pagination.page, appliedQuery);
+  }, [load, pagination.page, appliedQuery]);
+
+  function handleSearch(e: React.FormEvent<HTMLFormElement>): void {
+    e.preventDefault();
+    const q = searchInput.trim();
+    setAppliedQuery(q);
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }
+
+  function handleReset(): void {
+    setSearchInput("");
+    setAppliedQuery("");
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }
 
   return (
     <div className="min-h-screen bg-[#f0f2f5] pb-10">
@@ -111,12 +128,46 @@ export default function CustomerShipmentsPage() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Ship className="h-7 w-7 shrink-0 text-[#1677ff]" />
           <h1 className="text-base font-semibold text-[rgba(0,0,0,0.88)]">
-            我的运单
+            运单列表
           </h1>
         </div>
         <p className="mb-3 text-xs text-[rgba(0,0,0,0.45)]">
           预录单号以 YB 开头；待支付金额为系统按体积与单价估算的人民币应付金额（已豁免低消时以实际为准）。
         </p>
+
+        {/* 搜索栏 */}
+        <form
+          onSubmit={handleSearch}
+          className="mb-3 flex flex-wrap items-center gap-2"
+        >
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="输入运单号 / 唛头 / 国内单号搜索"
+            className="h-8 w-64 rounded border border-[#d9d9d9] px-2.5 text-xs outline-none focus:border-[#1677ff] focus:ring-1 focus:ring-[#1677ff]"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="h-8 rounded border border-[#1677ff] bg-[#1677ff] px-3 text-xs font-medium text-white hover:bg-[#4096ff] disabled:opacity-50"
+          >
+            查询
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            disabled={loading}
+            className="h-8 rounded border border-[#d9d9d9] bg-white px-3 text-xs font-medium text-[rgba(0,0,0,0.88)] hover:border-[#1677ff] hover:text-[#1677ff] disabled:opacity-50"
+          >
+            重置
+          </button>
+          {appliedQuery ? (
+            <span className="text-xs text-[rgba(0,0,0,0.45)]">
+              搜索：<span className="font-medium text-[rgba(0,0,0,0.65)]">{appliedQuery}</span>
+            </span>
+          ) : null}
+        </form>
 
         {error ? (
           <p className="mb-3 rounded border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-600">
@@ -135,7 +186,6 @@ export default function CustomerShipmentsPage() {
                   <th className="min-w-[132px] px-1.5 py-1 font-medium">
                     下单时间
                   </th>
-                  <th className="px-1.5 py-1 font-medium">目的国家</th>
                   <th className="px-1.5 py-1 font-medium">仓库</th>
                   <th className="px-1.5 py-1 font-medium">状态</th>
                   <th className="px-1.5 py-1 font-medium text-right">总件数</th>
@@ -149,7 +199,7 @@ export default function CustomerShipmentsPage() {
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={10}
+                      colSpan={9}
                       className="px-3 py-6 text-center text-[rgba(0,0,0,0.45)]"
                     >
                       加载中…
@@ -158,7 +208,7 @@ export default function CustomerShipmentsPage() {
                 ) : rows.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={10}
+                      colSpan={9}
                       className="px-3 py-6 text-center text-[rgba(0,0,0,0.45)]"
                     >
                       暂无运单数据
@@ -183,9 +233,6 @@ export default function CustomerShipmentsPage() {
                       </td>
                       <td className="whitespace-nowrap px-1.5 py-px text-[rgba(0,0,0,0.65)]">
                         {formatOrderTime(row.createdAt)}
-                      </td>
-                      <td className="px-1.5 py-px">
-                        {(row.destinationCountry ?? "").trim() || "泰国"}
                       </td>
                       <td className="px-1.5 py-px">
                         {WAREHOUSE_LABEL[row.warehouse]}
