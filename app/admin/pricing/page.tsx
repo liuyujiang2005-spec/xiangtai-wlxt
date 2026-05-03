@@ -444,4 +444,7 @@ export default function AdminPricingPage() {
             {saving ? "保存中…" : "保存并生效"}
           </button>
         </div>
-      </di
+      </div>
+    </div>
+  );
+}
