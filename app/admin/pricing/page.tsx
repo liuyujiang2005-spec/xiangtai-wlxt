@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { FileText, Plus, Trash2, PackageCheck, RefreshCcw } from "lucide-react";
+import { FileText, Plus, Trash2, Save, RotateCcw } from "lucide-react";
 import { DEFAULT_PRICING, type PricingContent, type PricingRow } from "@/lib/pricing-defaults";
 
 /** 深拷贝，确保 state 修改不污染默认值 */
@@ -241,7 +241,7 @@ export default function AdminPricingPage() {
               onClick={handleReset}
               className="flex items-center gap-1.5 rounded border border-[#d9d9d9] bg-white px-3 py-1.5 text-sm text-[rgba(0,0,0,0.65)] hover:border-[#1677ff] hover:text-[#1677ff]"
             >
-              <RefreshCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3.5 w-3.5" />
               恢复默认
             </button>
             <button
@@ -250,7 +250,7 @@ export default function AdminPricingPage() {
               disabled={saving}
               className="flex items-center gap-1.5 rounded border border-[#1677ff] bg-[#1677ff] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#4096ff] disabled:opacity-60"
             >
-              <PackageCheck className="h-3.5 w-3.5" />
+              <Save className="h-3.5 w-3.5" />
               {saving ? "保存中…" : "保 存"}
             </button>
           </div>
@@ -440,7 +440,7 @@ export default function AdminPricingPage() {
             disabled={saving}
             className="flex items-center gap-1.5 rounded border border-[#1677ff] bg-[#1677ff] px-6 py-2 text-sm font-medium text-white hover:bg-[#4096ff] disabled:opacity-60"
           >
-            <PackageCheck className="h-4 w-4" />
+            <Save className="h-4 w-4" />
             {saving ? "保存中…" : "保存并生效"}
           </button>
         </div>
