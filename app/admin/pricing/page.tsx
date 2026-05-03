@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { FileText, Plus, Trash2, Save, RotateCcw } from "lucide-react";
+import { FileText, Plus, Trash2, CheckCircle, RotateCcw } from "lucide-react";
 import { DEFAULT_PRICING, type PricingContent, type PricingRow } from "@/lib/pricing-defaults";
 
 /** 深拷贝，确保 state 修改不污染默认值 */
@@ -250,7 +250,7 @@ export default function AdminPricingPage() {
               disabled={saving}
               className="flex items-center gap-1.5 rounded border border-[#1677ff] bg-[#1677ff] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#4096ff] disabled:opacity-60"
             >
-              <Save className="h-3.5 w-3.5" />
+              <CheckCircle className="h-3.5 w-3.5" />
               {saving ? "保存中…" : "保 存"}
             </button>
           </div>
@@ -440,11 +440,8 @@ export default function AdminPricingPage() {
             disabled={saving}
             className="flex items-center gap-1.5 rounded border border-[#1677ff] bg-[#1677ff] px-6 py-2 text-sm font-medium text-white hover:bg-[#4096ff] disabled:opacity-60"
           >
-            <Save className="h-4 w-4" />
+            <CheckCircle className="h-4 w-4" />
             {saving ? "保存中…" : "保存并生效"}
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
+      </di
