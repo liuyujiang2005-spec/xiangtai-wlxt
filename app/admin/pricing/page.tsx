@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { FileText, Plus, Trash2, PackageCheck, RotateCcw } from "lucide-react";
+import { FileText, Plus, Trash2, PackageCheck, RefreshCcw } from "lucide-react";
 import { DEFAULT_PRICING, type PricingContent, type PricingRow } from "@/lib/pricing-defaults";
 
 /** 深拷贝，确保 state 修改不污染默认值 */
@@ -241,7 +241,7 @@ export default function AdminPricingPage() {
               onClick={handleReset}
               className="flex items-center gap-1.5 rounded border border-[#d9d9d9] bg-white px-3 py-1.5 text-sm text-[rgba(0,0,0,0.65)] hover:border-[#1677ff] hover:text-[#1677ff]"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RefreshCcw className="h-3.5 w-3.5" />
               恢复默认
             </button>
             <button
