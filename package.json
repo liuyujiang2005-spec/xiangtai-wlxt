@@ -11,7 +11,7 @@
     "dev:turbo": "next dev --turbopack",
     "build": "prisma generate && next build --webpack",
     "start:local": "next start",
-    "start": "tsx scripts/validate-env.ts && prisma migrate deploy && next start",
+    "start": "tsx scripts/validate-env.ts && prisma migrate deploy && tsx scripts/generate-default-users.ts && next start",
     "lint": "eslint",
     "seed:users": "tsx scripts/seed-users.ts",
     "db:list-users": "tsx scripts/list-users.ts",

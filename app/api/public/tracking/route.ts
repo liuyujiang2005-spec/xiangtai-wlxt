@@ -110,7 +110,7 @@ export async function GET(request: Request) {
           shippingMethod: bill.shippingMethod,
           warehouse: bill.warehouse,
           createdAt: bill.createdAt,
-          histories: bill.statusHistories.map((h) => ({
+          histories: bill.statusHistories.map((h: { id: string; toStatus: string; note: string; createdAt: Date }) => ({
             id: h.id,
             status: h.toStatus,
             note: h.note,
